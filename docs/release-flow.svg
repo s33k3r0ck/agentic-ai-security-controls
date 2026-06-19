@@ -1,0 +1,108 @@
+<svg viewBox="0 0 1080 700" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'Anthropic Sans',-apple-system,'Segoe UI',Roboto,sans-serif">
+<title>Release flow for agentic systems</title>
+<desc>A vertical per-release pipeline with a built-once foundation, a material-change branch into targeted human security review, continuous runtime operations, incident response, and off-cycle periodic re-attestation, plus a right-hand legend describing each SDLC gate.</desc>
+<style>
+.t{font-weight:500;font-size:13px;fill:#201F1C}
+.ts{font-weight:400;font-size:11.5px;fill:#66645E}
+.th{font-weight:500;font-size:12px;fill:#8A8884;letter-spacing:.04em}
+.lh{font-weight:500;font-size:15px;fill:#201F1C}
+.lid{font-weight:500;font-size:12.5px;fill:#201F1C}
+.ld{font-weight:400;font-size:11.5px;fill:#66645E}
+</style>
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9A9893"/></marker>
+<marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#C98A2B"/></marker>
+</defs>
+
+<rect x="0" y="0" width="1080" height="700" fill="#FBFBFA"/>
+
+<rect x="20" y="18" width="660" height="56" rx="8" fill="#F0F0EE" stroke="#CBCBC4" stroke-width="1.5"/>
+<text class="t" x="40" y="42">Foundation — built once · Gates 0–3</text>
+<text class="ts" x="40" y="61">architecture · identity · containment · egress — standing, carried across releases</text>
+
+<text class="th" x="290" y="100" text-anchor="middle">Per release</text>
+
+<rect x="140" y="108" width="300" height="46" rx="8" fill="#F0F0EE" stroke="#CBCBC4" stroke-width="1.5"/>
+<text class="t" x="290" y="136" text-anchor="middle">Dev commits / opens PR</text>
+<path d="M290 154 V178" stroke="#9A9893" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+
+<rect x="140" y="180" width="300" height="54" rx="8" fill="#F0F0EE" stroke="#CBCBC4" stroke-width="1.5"/>
+<text class="t" x="290" y="200" text-anchor="middle">Change classification · Gate 8</text>
+<text class="ts" x="290" y="220" text-anchor="middle">new tool? data? autonomy? model?</text>
+
+<path d="M290 234 V270" stroke="#9A9893" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+<text class="ts" x="302" y="256">routine</text>
+
+<path d="M440 200 H488" stroke="#C98A2B" stroke-width="1.6" fill="none" marker-end="url(#ara)"/>
+<text class="ts" x="464" y="194" text-anchor="middle">material</text>
+
+<rect x="490" y="180" width="190" height="86" rx="8" fill="#FAEFD9" stroke="#D29A3A" stroke-width="1.5"/>
+<text class="t" x="585" y="202" text-anchor="middle">Targeted security review</text>
+<text class="ts" x="585" y="221" text-anchor="middle">material change only</text>
+<text class="ts" x="585" y="238" text-anchor="middle">blast-radius subset via</text>
+<text class="ts" x="585" y="255" text-anchor="middle">dependency graph (affects)</text>
+
+<rect x="140" y="272" width="300" height="56" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+<text class="t" x="290" y="293" text-anchor="middle">CI auto-gates · every push</text>
+<text class="ts" x="290" y="312" text-anchor="middle">scans · param validation · injection · blocks on red</text>
+<path d="M290 328 V370" stroke="#9A9893" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+
+<path d="M585 266 V401 H442" stroke="#C98A2B" stroke-width="1.6" fill="none" marker-end="url(#ara)"/>
+
+<rect x="140" y="372" width="300" height="58" rx="8" fill="#FAEFD9" stroke="#D29A3A" stroke-width="1.5"/>
+<text class="t" x="290" y="394" text-anchor="middle">Release gate · Gate 5 + floor</text>
+<text class="ts" x="290" y="413" text-anchor="middle">21 non-waivable green · kill-switch · rollback</text>
+<path d="M290 430 V460" stroke="#9A9893" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+
+<rect x="140" y="462" width="300" height="44" rx="8" fill="#F0F0EE" stroke="#CBCBC4" stroke-width="1.5"/>
+<text class="t" x="290" y="489" text-anchor="middle">Deploy / release</text>
+
+<text class="th" x="290" y="540" text-anchor="middle">Continuous &amp; periodic</text>
+<path d="M290 506 V550" stroke="#9A9893" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+
+<rect x="140" y="552" width="300" height="54" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+<text class="t" x="290" y="574" text-anchor="middle">Runtime ops · Gate 6</text>
+<text class="ts" x="290" y="593" text-anchor="middle">always on: logs · monitor · drift</text>
+
+<path d="M440 579 H488" stroke="#9A9893" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+<text class="ts" x="464" y="573" text-anchor="middle">incident</text>
+<rect x="490" y="552" width="190" height="54" rx="8" fill="#FAEFD9" stroke="#D29A3A" stroke-width="1.5"/>
+<text class="t" x="585" y="574" text-anchor="middle">Incident response</text>
+<text class="ts" x="585" y="593" text-anchor="middle">Gate 7 · disable · rotate</text>
+
+<rect x="140" y="636" width="540" height="54" rx="8" fill="#FAEFD9" stroke="#D29A3A" stroke-width="1.5"/>
+<text class="t" x="158" y="660">Periodic · calendar — not per-push</text>
+<text class="ts" x="158" y="679">red-team refresh · Accepted-Risk expiry · obligation drift</text>
+
+<path d="M140 663 H100 V74" stroke="#C98A2B" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#ara)"/>
+<text class="ts" x="94" y="372" text-anchor="end">re-attest</text>
+
+<rect x="716" y="18" width="344" height="582" rx="10" fill="#F6F6F4" stroke="#E5E5DF" stroke-width="1.5"/>
+<text class="lh" x="736" y="48">Gates in this flow</text>
+
+<text class="lid" x="736" y="92">0–3 · Foundation</text>
+<text class="ld" x="736" y="110">intake, threat model, secure design &amp; build</text>
+<text class="lid" x="736" y="142">4 · Testing &amp; red-team</text>
+<text class="ld" x="736" y="160">injection / misuse suites — run by CI</text>
+<text class="lid" x="736" y="192">5 · Release readiness</text>
+<text class="ld" x="736" y="210">clear the floor, kill-switch drill, rollback</text>
+<text class="lid" x="736" y="242">6 · Runtime operations</text>
+<text class="ld" x="736" y="260">agentic logs, monitoring, drift detection</text>
+<text class="lid" x="736" y="292">7 · Incident response</text>
+<text class="ld" x="736" y="310">disable, rotate credentials, preserve evidence</text>
+<text class="lid" x="736" y="342">8 · Change management</text>
+<text class="ld" x="736" y="360">classify change, re-review blast radius</text>
+
+<line x1="736" y1="386" x2="1040" y2="386" stroke="#E5E5DF" stroke-width="1.5"/>
+<text class="lid" x="736" y="412">Colour key</text>
+<rect x="736" y="424" width="14" height="14" rx="3" fill="#F0F0EE" stroke="#CBCBC4" stroke-width="1.5"/>
+<text class="ld" x="760" y="435">neutral — pipeline step</text>
+<rect x="736" y="452" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
+<text class="ld" x="760" y="463">automated — machine, always-on</text>
+<rect x="736" y="480" width="14" height="14" rx="3" fill="#FAEFD9" stroke="#D29A3A" stroke-width="1.5"/>
+<text class="ld" x="760" y="491">human — review only where needed</text>
+
+<line x1="736" y1="512" x2="1040" y2="512" stroke="#E5E5DF" stroke-width="1.5"/>
+<text class="ld" x="736" y="534">Floor = 21 non-waivable controls —</text>
+<text class="ld" x="736" y="552">must Pass before launch, never waived.</text>
+</svg>

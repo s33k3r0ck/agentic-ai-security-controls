@@ -1,0 +1,12 @@
+# Source of truth — hand-formatted JSON-style control data; do not reformat.
+app/data.js
+
+# Generated tables/prose, provenance, and the hand-authored diagram.
+docs/
+
+# Markdown prose (README, CHANGELOG, …).
+*.md
+
+# Local agent guides (also gitignored).
+AGENTS.md
+CLAUDE.md

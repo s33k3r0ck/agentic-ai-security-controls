@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agentic SDLC Hardening Checklist — Canonical v1.0</title>
+    <link rel="stylesheet" href="checklist.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Secure SDLC &amp; Hardening Checklist for Agentic Systems</h1>
+      <p class="sub">Canonical v1.0 · 114 controls · interactive reader</p>
+      <p class="legend">
+        Pick the profiles your system matches (Core is always in scope; profiles are additive).
+        Click a control to see pass criteria, evidence, AGT risk, and dependency links. The
+        <span class="dng">floor</span> badge marks non-waivable, launch-blocking controls. Click the
+        status pill to mark Pass / Fail / Partial / N/A. Toggle <b>Step order</b> to list controls
+        in implementation order (no-prerequisite controls first, then those that depend on them).
+        Open a control to add a <b>note / evidence reference</b>. Statuses and notes live only in
+        this tab — use <b>Save file</b> to download them as JSON, <b>Load file</b> to restore a
+        saved file, or <b>Export Excel</b> to download the current filtered view as a styled
+        workbook (nothing is stored automatically). Hover AGT / floor / profile tags for
+        definitions; <b>depends-on / affects</b> chips jump to the related control.
+      </p>
+      <details class="lg">
+        <summary>Legend — IDs, tags &amp; acronyms</summary>
+        <div class="lgbody">
+          <h4>Control families (ID prefix)</h4>
+          <div class="lgrid">
+            <span><b>GOV</b> Governance</span><span><b>ARCH</b> Architecture</span
+            ><span><b>COMP</b> Compliance, residency, shadow-AI</span
+            ><span><b>TOOL</b> Tools and agency</span><span><b>ID</b> Identity and privilege</span
+            ><span><b>PROMPT</b> Prompt injection and context</span
+            ><span><b>DATA</b> Data and exfiltration</span
+            ><span><b>RAG</b> Retrieval-augmented generation</span><span><b>MEM</b> Memory</span
+            ><span><b>OUT</b> Output handling and sinks</span><span><b>CODE</b> Code execution</span
+            ><span><b>A2A</b> Agent-to-agent / multi-agent</span
+            ><span><b>HITL</b> Human oversight</span><span><b>RES</b> Resource control</span
+            ><span><b>CPS</b> Cyber-physical systems</span
+            ><span><b>OPS</b> Operations and audit</span><span><b>SUP</b> Supply chain</span
+            ><span><b>TEST</b> Testing and red teaming</span
+            ><span><b>CHG</b> Change management</span><span><b>IR</b> Incident response</span
+            ><span><b>DEC</b> Decommissioning</span>
+          </div>
+          <h4>Status values</h4>
+          <p>
+            <b>Pass</b> implemented, evidence exists · <b>Fail</b> missing/broken ·
+            <b>Partial</b> gaps remain · <b>N/A</b> not applicable (record reason) ·
+            <b>Accepted Risk</b> time-bound waiver (owner, expiry, compensating control) —
+            <b>not allowed for floor</b>. The <span class="fl">floor</span> badge = Non-Waivable
+            Release Floor: must Pass before launch, cannot be Accepted Risk.
+          </p>
+          <h4>Relationships and step order</h4>
+          <p>
+            <b>Depends on</b> = controls that must be in place first for this one to function/pass.
+            <b>Affects</b> = the inverse (controls that rely on this one). <b>Step order</b> lists
+            controls topologically: step 1 = no prerequisites (start here), each later step depends
+            only on earlier ones.
+          </p>
+          <h4>Applicability profiles (additive: Core + matches)</h4>
+          <p>
+            <b>Core</b> every system · <b>Tool-Using</b> calls tools/APIs ·
+            <b>RAG / Memory</b> retrieval or persistent memory · <b>Multi-Agent</b> subagents/A2A ·
+            <b>Regulated</b> legal/residency/attestation · <b>Cyber-Physical</b> actuates
+            physical/OT systems
+          </p>
+          <h4>Autonomy levels</h4>
+          <p>
+            <b>A0</b> advisory · <b>A1</b> assisted action · <b>A2</b> supervised delegation ·
+            <b>A3</b> autonomous operation
+          </p>
+          <h4>Risk model (AGT, used in the Risk column)</h4>
+          <div class="lgrid" id="agtlegend">
+            <!-- rendered from window.CHECKLIST.agt (data.js) by checklist.js -->
+          </div>
+          <p>
+            AGT-* are local IDs, mapped to OWASP Agentic <b>T1-T17</b> and OWASP LLM Top 10
+            (<b>LLM01-LLM10</b>). <b>ASI*</b> = community naming, not a canonical OWASP identifier.
+          </p>
+          <h4>Technical acronyms</h4>
+          <div class="lgrid">
+            <span><b>mTLS</b> mutual TLS</span><span><b>PKI</b> public key infrastructure</span
+            ><span><b>SPIFFE/SPIRE</b> workload identity</span
+            ><span><b>SVID</b> SPIFFE identity doc</span
+            ><span><b>DID/VC</b> decentralized id / verifiable credential</span
+            ><span><b>HSM/KMS</b> hardware security / key mgmt</span
+            ><span><b>NHI</b> non-human identity</span
+            ><span><b>RBAC/ABAC/PBAC</b> role/attribute/policy access control</span
+            ><span><b>PEP/PDP</b> policy enforcement / decision point</span
+            ><span><b>WORM</b> write-once-read-many storage</span
+            ><span><b>SBOM/AIBOM</b> software / AI bill of materials</span
+            ><span><b>CDR</b> content disarm and reconstruction</span
+            ><span><b>DLP</b> data loss prevention</span
+            ><span><b>PII/PHI</b> personal / health information</span
+            ><span><b>OT/ICS</b> operational tech / industrial control</span
+            ><span><b>RCE</b> remote code execution</span><span><b>MITM</b> man-in-the-middle</span
+            ><span><b>EDoS</b> economic denial of sustainability</span
+            ><span><b>DAST</b> dynamic app security testing</span
+            ><span><b>SOAR</b> security orchestration and response</span
+            ><span><b>SIEM</b> security info and event mgmt</span
+            ><span><b>MTTD</b> mean time to detection</span
+            ><span><b>MCP</b> model context protocol</span><span><b>A2A</b> agent-to-agent</span
+            ><span><b>RAG</b> retrieval-augmented generation</span
+            ><span><b>CI/CD</b> continuous integration / delivery</span
+            ><span><b>JWT/OAuth</b> web token / authorization</span>
+          </div>
+        </div>
+      </details>
+      <div class="bar">
+        <input id="clq" type="text" class="search" placeholder="Search controls…" /><button
+          id="clo"
+          class="chip"
+        >
+          Step order</button
+        ><button id="clx" class="chip">Expand all</button
+        ><button id="clc" class="chip">Collapse all</button>
+      </div>
+      <div class="bar" id="clchips"></div>
+      <p class="hint">
+        Not every control applies to your system. Use the profile filters above to scope the list,
+        then mark any remaining control that still does not fit as <b>N/A</b> (note a brief reason)
+        and skip it when filling in the rest — only in-scope controls need a Pass / Fail / Partial
+        assessment.
+      </p>
+      <div class="bar">
+        <span class="barlbl">Assessment</span
+        ><button id="clxl" class="chip primary">Export Excel…</button
+        ><button id="clsave" class="chip">Save file…</button
+        ><button id="clload" class="chip">Load file…</button
+        ><button id="clclear" class="chip">Clear</button
+        ><input id="clfile" type="file" accept="application/json,.json" hidden />
+      </div>
+      <div class="statline">
+        <span class="mut" id="clst"></span><span class="msg" id="clmsg"></span>
+      </div>
+      <div id="cll"></div>
+      <p class="foot">
+        Loads <code>data.js</code> directly — <code>app/data.js</code> is the source of truth for
+        control data and the AGT risk model. <code>docs/checklist.md</code> is a readable, generated
+        view of the same data (prose, gates, legend in Appendix D, dependency graph in Appendix E).
+        Your assessment (the statuses and notes you fill in) is separate from the control
+        definitions: it is saved to and loaded from a JSON file you control via <b>Save file</b> /
+        <b>Load file</b>. AI-synthesized content; verify high-stakes controls against primary
+        sources.
+      </p>
+    </div>
+    <script src="data.js"></script>
+    <script src="checklist.js"></script>
+  </body>
+</html>
