@@ -34,6 +34,7 @@
 ## 2. Trust boundaries and untrusted-input inventory (ARCH-02)
 
 > ARCH-02 requires that **every** channel carrying content the model can read be labeled untrusted. List each input source, where it crosses into the agent's context, and confirm it is treated as untrusted (data, never instructions). Any unlisted channel is an implicit trust gap. Map each row to the AGT risk(s) it most enables. Mark rows N/A with a reason if a channel does not exist for this agent.
+> Commonly missed for browser-embedded agents: page / DOM / serialized client context (route, selected ids, visible balances/labels supplied by the front-end) is an attacker-forgeable untrusted channel. Treat it as DATA; client-supplied identifiers must be re-authorized server-side and never trusted for authorization (AGT-01, AGT-03).
 
 | Input channel | Enters context via | Untrusted? (Y/N) | Where boundary is enforced | AGT risk(s) |
 |---|---|---|---|---|
@@ -46,6 +47,7 @@
 | Email | _<inbox connector>_ | _Y_ | _<treated as data only>_ | _AGT-01, AGT-08_ |
 | Media (image / audio / video) | _<multimodal input>_ | _Y_ | _<no embedded-instruction trust>_ | _AGT-01_ |
 | A2A messages | _<agent-to-agent channel>_ | _Y_ | _<authn + quorum, see A2A-0x>_ | _AGT-08_ |
+| Page / DOM / client-supplied context (route, selected ids, visible labels) | _<front-end posts client context to orchestrator>_ | _Y_ | _<treated as DATA; identifiers re-bound/re-authorized server-side, never trusted for authz>_ | _AGT-01, AGT-03_ |
 | _<other channel>_ | _<...>_ | _<Y/N or N/A — reason>_ | _<...>_ | _<...>_ |
 
 > If any channel above is answered **N** (treated as trusted), it must be justified here and accepted as residual risk in §7 — do not leave a trusted-input channel unexplained.
@@ -71,6 +73,10 @@
 
 > EXAMPLE (delete): "System policy and tool allow-list are injected by the orchestrator and never echoed into a writable slot; retrieved docs arrive only inside a `<retrieved_data>` boundary the model is instructed (and trained) to treat as untrusted reference, not commands. Verified by PROMPT-03 injection suite."
 
+> Inline guard / firewall layer: record (a) whether an inbound-prompt and/or outbound-response guard is in the path, (b) its enforcement mode per environment (enforce / monitor / off — e.g. enforce in prod, monitor in staging), and (c) whether a guard block/redaction surfaces correctly to the user and to logs. A guard decision the UI renders as success (block-but-UI-shows-success) is a tracked discrepancy, not a pass — carry it as residual risk in §7. The guard is a COMPENSATING control and does not replace server-side authorization.
+
+**Inline input/output guard present?** _<Y/N — inbound prompt and/or outbound response>_  ·  **Mode per environment:** _<e.g. enforce in prod, monitor in staging, off in dev>_  ·  **Block/redaction surfaces correctly to user + logs?** _<Y/N; note any block-but-UI-shows-success discrepancy>_
+
 ---
 
 ## 4. Containment boundaries (ARCH-04)
@@ -84,9 +90,11 @@
 | Execution / code | _<sandbox, no host access>_ | _<...>_ | _AGT-07_ | _<CODE-0x>_ |
 | Network egress | _<deny-by-default allow-list>_ | _<...>_ | _AGT-04, AGT-08_ | _<...>_ |
 | Filesystem | _<read-only / scoped workdir>_ | _<...>_ | _AGT-07_ | _<...>_ |
-| Tenant data | _<per-tenant isolation>_ | _<...>_ | _AGT-03_ | _<...>_ |
+| Tenant / customer / principal data | _<isolation per the system's real boundary (tenant OR per-customer OR per-user) — state which; cross-boundary access fails closed>_ | _<...>_ | _AGT-03_ | _<...>_ |
 | Logs | _<no secret/PII echo, scoped access>_ | _<...>_ | _AGT-04_ | _<OPS-0x>_ |
 | Output paths / sinks | _<encoded before HTML/SQL/shell>_ | _<...>_ | _AGT-06_ | _<...>_ |
+
+> Name the real isolation boundary — tenant, per-customer, or per-user — and how cross-boundary access fails closed. Single-tenant systems are often still multi-customer; do not just name the credential audience.
 
 **Privilege model summary:** _<who/what the agent runs as; how delegated/inherited privileges are bounded — guards AGT-03>_
 
@@ -131,8 +139,10 @@
 | Authorization | _<policy engine checks principal, not prompt>_ | _Y_ | _<...>_ |
 | Tool gating | _<gateway allow-list + per-tool scopes>_ | _Y_ | _<TOOL-0x>_ |
 | Identity | _<bound to authenticated session>_ | _Y_ | _<...>_ |
-| Approval / human-in-loop | _<out-of-model approval for high-impact actions>_ | _Y_ | _<...>_ |
+| Approval / human-in-loop | _<out-of-model approval for high-impact actions; if the agent only drafts/proposes, name where the real execution gate lives (e.g. step-up auth / SCA in a downstream system)>_ | _Y_ | _<...>_ |
 | Execution | _<sandbox + egress deny-by-default>_ | _Y_ | _<CODE-0x>_ |
+
+> Where the agent only proposes/drafts a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), state that explicitly and name where the real execution gate lives — that location is the evidence, not a bare Yes/No.
 
 **Prompt-injection test coverage:** _<link to PROMPT-03 / TEST red-team suite results>_
 
@@ -150,6 +160,8 @@
 | 2 | _<...>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
 
 > EXAMPLE (delete): "Multimodal injection via images is in scope but the red-team suite covers text only; tracked as TEST-backlog #142, accepted for this release at Med severity by the security owner."
+
+> EXAMPLE (delete): "Inline guard runs monitor-only in staging and has a known block-but-UI-shows-success discrepancy where a blocked/redacted response still renders as success to the user; tracked, not yet remediated. Recorded here because a guard decision the UI renders as success is a tracked discrepancy, not a pass."
 
 ---
 

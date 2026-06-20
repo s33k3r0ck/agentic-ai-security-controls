@@ -2,7 +2,7 @@
 
 **A secure-SDLC hardening checklist for agentic AI systems** — 114 security controls spanning the lifecycle (use-case intake → decommissioning), for systems where an AI component can plan, call tools, retrieve context, use memory, communicate with other agents, influence human decisions, or take actions with partial autonomy (including agents that drive or gate cyber-physical systems).
 
-**Version 1.1.0** · 2026-06-20 · see [`CHANGELOG.md`](CHANGELOG.md)
+**Version 1.1.1** · 2026-06-21 · see [`CHANGELOG.md`](CHANGELOG.md)
 
 This repository is **not** an attempt to replace existing standards and practices — it brings them together and makes them practical to use when building secure agentic AI systems. The controls it offers are deliberately simple, clear, and measurable.
 
@@ -161,7 +161,7 @@ Released under [semantic versioning](https://semver.org), keyed to the **control
 - **MINOR** (`1.x.0`) — control wording, pass criteria, or evidence refined; new appendices; reader / tooling features. Existing control IDs stay stable.
 - **PATCH** (`1.0.x`) — editorial fixes, typos, non-semantic corrections.
 
-Current release: **1.1.0** — see [`CHANGELOG.md`](CHANGELOG.md). The checklist document edition is labelled *Canonical v1.0* (in `docs/checklist.md`); control IDs are unchanged since 1.0.0.
+Current release: **1.1.1** — see [`CHANGELOG.md`](CHANGELOG.md). The checklist document edition is labelled *Canonical v1.0* (in `docs/checklist.md`); control IDs are unchanged since 1.0.0.
 
 ---
 

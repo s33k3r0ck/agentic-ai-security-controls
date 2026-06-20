@@ -13,13 +13,14 @@
 
 > State what this register covers so a reviewer can judge whether the analysis is complete. This is the per-system view of the 15 AGT risk families (AGT-01..AGT-15). It is the evidence that the team walked the full risk model, not a hand-picked subset.
 > Tie the method back to the controls this register backs:
-> - **ARCH-02 (Mark untrusted inputs):** name where untrusted/external input enters the agent (user messages, tool/RAG results, inter-agent messages, web content) — these are the surfaces most AGT rows reference.
-> - **GOV-03 (Define high-risk actions):** reference the high-risk action inventory the agent can take (spend, send, delete, deploy, change permissions); high likelihood/impact rows should map to those actions.
+> - **ARCH-02 (Mark untrusted inputs):** name where untrusted/external input enters the agent (user messages, tool/RAG results, inter-agent messages, web content, page/DOM or serialized client context) — these are the surfaces most AGT rows reference. Page / DOM / serialized client context (route, selected ids, visible balances/labels supplied by the front-end) is an attacker-forgeable untrusted channel. Treat it as DATA; client-supplied identifiers must be re-authorized server-side and never trusted for authorization (AGT-01, AGT-03).
+> - **GOV-03 (Define high-risk actions):** reference the high-risk action inventory the agent can take (spend, send, delete, deploy, change permissions) and, for each, where it is gated. Where the agent only proposes/drafts a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), state that explicitly and name where the real execution gate lives — that location is the evidence, not a bare Yes/No. High likelihood/impact rows should map to those actions.
 > - **TEST-01 (Map tests to AGT risks):** every applicable risk must have a test reference, so this register and the test suite stay in lockstep.
 
 **Agent autonomy level:** _<e.g. supervised / human-in-the-loop / autonomous>_
-**Untrusted input surfaces (ARCH-02):** _<list: user input, tool outputs, RAG corpus, A2A messages, web fetch, …>_
-**High-risk actions inventory (GOV-03):** _<reference doc / link>_
+**Untrusted input surfaces (ARCH-02):** _<list: user input, tool outputs, RAG corpus, A2A messages, web fetch, page/DOM or serialized client context, …>_
+**High-risk actions inventory (GOV-03):** _<reference doc / link — and, per high-risk action, where it is gated: in-agent confirm vs. an external system control such as SCA / step-up>_
+**Compensating guard/firewall layer:** _<enforce-vs-monitor mode per environment + known divergences>_
 **Assessment participants:** _<names, roles>_
 **Likelihood scale used:** _Low / Medium / High_  ·  **Impact scale used:** _Low / Medium / High_
 
@@ -34,7 +35,7 @@
 > - **Applicable:** _Y_ or _N_. If _N_, the Scenario cell must state why (e.g. "agent has no tool access", "no memory/RAG in this system").
 > - **Scenario:** how this risk would concretely manifest in _this_ system. Reference the untrusted surface (ARCH-02) or high-risk action (GOV-03) involved.
 > - **Likelihood / Impact:** _Low / Medium / High_ for the unmitigated risk, given this system.
-> - **Mitigating control IDs:** the checklist control IDs that reduce this risk (e.g. `TOOL-01`, `ID-02`, `OUT-03`). Use real IDs from `docs/checklist.md`; do not invent IDs.
+> - **Mitigating control IDs:** the checklist control IDs that reduce this risk (e.g. `TOOL-01`, `ID-02`, `OUT-03`). Use real IDs from `docs/checklist.md`; do not invent IDs. If you rely on the **inline guard / firewall layer**, record (a) whether an inbound-prompt and/or outbound-response guard is in the path, (b) its enforcement mode per environment (enforce / monitor / off — e.g. enforce in prod, monitor in staging), and (c) whether a guard block/redaction surfaces correctly to the user and to logs. A guard decision the UI renders as success (block-but-UI-shows-success) is a tracked discrepancy, not a pass. The guard is a COMPENSATING control and does not replace server-side authorization — a compensating control that can diverge from observed UI/audit state must also be carried as a residual in §3.
 > - **Test ref (TEST-01):** the test case / suite ID that exercises this risk. Required for every applicable row — this is the GOV/TEST link that proves coverage.
 > - **Residual risk:** _Low / Medium / High_ after the listed controls and tests. A High residual must be accepted explicitly in §3.
 > - **Owner / Status:** accountable person and _Open / Mitigated / Accepted / N/A_.

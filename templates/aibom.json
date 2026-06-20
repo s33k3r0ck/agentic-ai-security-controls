@@ -13,15 +13,17 @@
   },
   "_guidance": {
     "_note": "Delete this whole _guidance block once the AIBOM is filled in. It explains each section and how it backs the controls; it is not part of the evidence record.",
-    "scope": "List EVERY component the agent can load or call at runtime. An entry missing here is an untracked component (SUP-01 gap) and an unpinned/unverified supply-chain risk (SUP-02/SUP-04, risk AGT-12).",
+    "scope": "List EVERY component the agent can load or call at runtime — including the 'libraries' section, which a banking/regulated service will always have. An entry missing here is an untracked component (SUP-01 gap) and an unpinned/unverified supply-chain risk (SUP-02/SUP-04, risk AGT-12). Do not silently drop a category: populate it, or leave it [] only if the system genuinely has none.",
     "fields": {
-      "version": "A pinned identifier (semver tag, digest, or content hash) — never 'latest' or a floating tag (SUP-04).",
+      "version": "A pinned identifier (semver tag, digest, or content hash) — never 'latest' or a floating tag (SUP-04). For hosted models/services, prefer an immutable id (model digest or dated snapshot id). A mutable gateway alias (e.g. 'prod-chat') is a floating pointer and is allowed ONLY if it is frozen and you set 'pin_immutable' (the underlying immutable id) plus 'pin_freeze_ref' (the freeze/attestation/change-review record); an alias with no freeze reference fails SUP-04.",
+      "pin_immutable": "Optional. When 'version' is a mutable alias, record the underlying immutable id the alias is frozen to (digest / dated snapshot). Omit when 'version' is already immutable.",
+      "pin_freeze_ref": "Optional. When 'version' is a mutable alias, reference the documented freeze / attestation / change-review record that pins the alias (SUP-04). Required alongside 'pin_immutable' for an alias to be acceptable.",
       "source": "Where the component comes from: registry, repo path, or URL of record.",
       "provenance": "The signature, attestation, or verification record proving authenticity and integrity (SUP-02). Reference the artifact, e.g. a cosign signature, SLSA attestation, or signed digest.",
       "approved": "Boolean string: 'true' only if the component passed the documented approval/verification gate before deployment (SUP-02). Anything 'false' must not be deployed.",
       "risk": "Component risk rating used to prioritize review, e.g. 'low' / 'medium' / 'high'."
     },
-    "empty_arrays": "Sections left as [] (plugins, connectors, mcpServers, datasets, apis) MUST be empty because the system genuinely has none — not because they were not checked. If a category exists, populate it.",
+    "empty_arrays": "Sections left as [] (plugins, connectors, mcpServers, libraries, datasets, apis) MUST be empty because the system genuinely has none — not because they were not checked. If a category exists, populate it (libraries in particular are rarely genuinely empty).",
     "delete_before_evidence": "Remove _README, _controls, _meta, and this _guidance object so the committed aibom.json is a clean machine-readable inventory."
   },
   "metadata": {
@@ -35,7 +37,9 @@
   "models": [
     {
       "name": "<model name>",
-      "version": "<id>",
+      "version": "<immutable id preferred; mutable gateway alias only with pin_immutable + pin_freeze_ref>",
+      "pin_immutable": "<underlying immutable id if version is a mutable alias, else omit>",
+      "pin_freeze_ref": "<freeze/attestation/change-review record if version is a mutable alias, else omit>",
       "provider": "<provider>",
       "source": "<registry/url>",
       "provenance": "<signature/attestation>",

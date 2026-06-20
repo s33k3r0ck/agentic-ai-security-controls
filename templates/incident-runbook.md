@@ -49,7 +49,13 @@
 > (Section 4) or contain in place. Be explicit so a responder does not have to improvise the
 > sev under pressure.
 
-**Detection sources:** _<e.g. runtime output filter alert, tool-call anomaly detector, egress / DLP alert, human report, downstream system alarm, abuse report, red-team finding>_
+**Detection sources:** _<e.g. inline guard / AI-firewall alert, runtime output filter alert, tool-call anomaly detector, egress / DLP alert, human report, downstream system alarm, abuse report, red-team finding>_
+
+> If an inline guard / AI firewall is in the detection path, record its enforcement mode per
+> environment (enforce / monitor / off — e.g. enforce in prod, monitor in staging): a guard in
+> monitor mode alerts but does not block. A guard decision the UI renders as success
+> (block-but-UI-shows-success) is a tracked discrepancy, not a contained signal — confirm via guard
+> logs / backend state, not the UI.
 
 | Severity | Definition (fill for this agent) | Example trigger | Immediate action |
 | --- | --- | --- | --- |
@@ -66,6 +72,16 @@
 > command, console path, or owner who can pull it. Order matters: stop new harmful actions first
 > (revoke tool/connector access or pause the workflow), then take the agent down. This mitigates
 > AGT-class misuse where the agent keeps acting autonomously. Record what you actually did and when.
+>
+> Where the agent only proposes/drafts a high-risk action and real execution happens out-of-band
+> (e.g. behind step-up auth / SCA in a downstream system), disabling the agent does NOT stop or
+> recall an action already handed off — name where the real execution gate lives and who can hold
+> or cancel in-flight transactions there; that location is the evidence, not a ticked agent layer.
+> The inline guard / AI firewall is itself a containment lever and a credential surface: record its
+> kill path here and its keys in Section 5, and verify a "Done?" by actual backend effect, not by the
+> UI — a guard decision the UI renders as success (block-but-UI-shows-success) is a tracked
+> discrepancy, not a contained state. The guard is a COMPENSATING control and does not replace
+> server-side authorization.
 
 | Layer | Disable mechanism (command / console / owner) | Done? | Time (TZ) | By |
 | --- | --- | --- | --- | --- |
@@ -75,8 +91,11 @@
 | Model endpoint | _<disable model route / fall back to safe model / block endpoint>_ | ☐ | _<...>_ | _<...>_ |
 | Workflow / triggers | _<pause scheduler, queue, webhook, cron>_ | ☐ | _<...>_ | _<...>_ |
 | Environment | _<isolate network segment / cordon namespace>_ | ☐ | _<...>_ | _<...>_ |
+| Guardrail / AI guard layer (mode + kill path) | _<force fail-closed / block-all; record enforce vs monitor mode; effect verified independently of UI? (UI may render success while the guard blocked — confirm via guard logs / backend state)>_ | ☐ | _<...>_ | _<...>_ |
+| Downstream actions already in flight (outside the agent) | _<for draft-only / human-execute or async-handoff splits: disabling the agent does not stop a handed-off action (e.g. a payment already in SCA) — name the system + owner who can hold/cancel in-flight transactions>_ | ☐ | _<...>_ | _<...>_ |
 
 > _EXAMPLE — delete this row: Connector(s) | Revoke the agent's Google Workspace OAuth token in admin console > Security > API controls | ☑ | 14:07 UTC | S. Okafor._
+> _EXAMPLE — delete this row: Downstream actions already in flight | Agent only drafts payments; ask Payments Ops to hold/cancel pending transfers in the core banking console — disabling the agent does not stop a payment a customer is completing under SCA | ☑ | 14:12 UTC | D. Ruiz._
 
 ## 5. Credential rotation and state quarantine (IR-02)
 
@@ -84,6 +103,15 @@
 > tainted. Rotate every credential in its blast radius and quarantine its stateful surfaces so a
 > poisoned memory or RAG entry cannot re-trigger the behavior after recovery. Do not "clean in
 > place" trusting the agent's own outputs. Capture exactly what was rotated/quarantined.
+>
+> IR-02 names five quarantine surfaces — memory, RAG, documents, tool output, and A2A messages.
+> Quarantine each that applies; for a surface that does not exist in this system (e.g. A2A in a
+> single-agent system) write N/A with a reason rather than leaving the row blank — N/A-with-reason
+> is a pass, a silently missing surface is not. Distinguish ephemeral session/scratchpad context
+> from a durable per-customer memory store (the higher-sensitivity poisoning surface), and note that
+> a shared / customer-data-free RAG corpus poisoning is global-but-low-sensitivity — scope the
+> quarantine to the real isolation boundary (tenant, per-customer, or per-user) rather than taking
+> all customers offline for content that by design carries no customer data.
 
 **Credentials to rotate (IR-02):**
 
@@ -93,14 +121,17 @@
 | _<service account / OAuth>_ | _<...>_ | ☐ | _<...>_ | _<...>_ |
 | _<signing / encryption keys>_ | _<...>_ | ☐ | _<...>_ | _<...>_ |
 | _<DB / connector passwords>_ | _<...>_ | ☐ | _<...>_ | _<...>_ |
+| _<inline guard / AI-firewall keys / provider tokens>_ | _<the guard is a separate component with its own keys / provider tokens>_ | ☐ | _<...>_ | _<...>_ |
 
 **State to quarantine (IR-02):**
 
 | State surface | Quarantine action | Done? | Notes |
 | --- | --- | --- | --- |
-| Agent memory / scratchpad | _<freeze, snapshot, then purge tainted entries>_ | ☐ | _<...>_ |
-| RAG / vector store | _<isolate index, identify poisoned vectors>_ | ☐ | _<...>_ |
+| Agent memory / scratchpad (ephemeral vs durable per-customer store) | _<freeze, snapshot, then purge tainted entries; treat durable per-customer memory as the higher-sensitivity surface>_ | ☐ | _<...>_ |
+| RAG / vector store | _<isolate index, identify poisoned vectors; if the corpus is shared / customer-data-free, scope accordingly — global-but-low-sensitivity>_ | ☐ | _<...>_ |
 | Documents / knowledge base | _<flag suspect docs read-only / pull from index>_ | ☐ | _<...>_ |
+| Tool output / cached tool results | _<freeze, identify poisoned/tainted results, no replay back into the agent>_ | ☐ | _<...>_ |
+| A2A / inter-agent messages | _<quarantine inbound/outbound agent messages; write N/A + reason for single-agent systems>_ | ☐ | _<...>_ |
 | Task / job queue | _<drain or hold pending tasks, no auto-replay>_ | ☐ | _<...>_ |
 
 ## 6. Evidence preservation and blast-radius analysis (IR-03)
@@ -128,7 +159,7 @@
 | Dimension | Affected? | Detail / scope |
 | --- | --- | --- |
 | Users | _<yes/no>_ | _<count, identities, segments>_ |
-| Tenants | _<yes/no>_ | _<which tenants>_ |
+| Tenants / customers (the real isolation boundary) | _<yes/no>_ | _<which tenants or customers; for single-tenant multi-customer systems use per-customer — note any cross-customer rebinding attempt>_ |
 | Downstream systems | _<yes/no>_ | _<systems, actions taken on them>_ |
 | Data | _<yes/no>_ | _<what was read / written / exfiltrated>_ |
 | Physical / real-world effects | _<yes/no>_ | _<actuation, payments, comms sent, orders placed>_ |

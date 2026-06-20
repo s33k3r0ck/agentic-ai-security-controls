@@ -18,23 +18,26 @@
 - **Jurisdictions / markets served:** _<e.g. EU, UK, US-CA>_
 - **Data classes handled:** _<e.g. PII, payment data, health data, internal confidential>_
 - **Processing roles:** _<controller / processor / sub-processor, per applicable law>_
+- **Isolation boundary:** _<per-customer / per-tenant / per-org — name the real boundary and how cross-boundary access fails closed; single-tenant systems are often still multi-customer, so do not just name the credential audience>_
 - **Out of scope (explicitly):** _<flows, data, or regions not covered by this release>_
 
 ## 2. Obligation register (COMP-01, COMP-02, COMP-03)
 
 > This is the core artifact. List every binding obligation the system is subject to and prove each one maps to an enforcing control with named evidence. An obligation with no enforcing control ID or no evidence artifact is an open gap and must be flagged in §6, not left blank.
-> Fill one row per obligation. Use the enforcing control ID from `docs/checklist.md` (e.g. COMP-02, DATA-04) — these are the technical controls that make the obligation real, satisfying COMP-02. For obligations governing high-impact or regulated decisions, the evidence artifact must be an audit trail sufficient to reconstruct the decision (COMP-03); note that requirement in the "Audit evidence required?" column.
+> Fill one row per obligation. Use the enforcing control ID from `docs/checklist.md` (e.g. COMP-02, DATA-04) — these are the technical controls that make the obligation real, satisfying COMP-02. The enforcement point can sit outside the agent: where the agent only proposes/drafts a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), state that explicitly and name where the real execution gate lives (e.g. "external — server-side payment UI, PSD2 SCA"). That location is the evidence, not a bare in-checklist control ID; the draft-vs-execute boundary is the recorded control. For obligations governing high-impact or regulated decisions, the evidence artifact must be an audit trail sufficient to reconstruct the decision (COMP-03); note that requirement in the "Audit evidence required?" column.
 > Delete the EXAMPLE row and this blockquote once filled.
 
 | # | Obligation (what must be true) | Source type | Source reference | Data scope | Enforcing control ID | Evidence artifact | Audit evidence required? (COMP-03) | Owner | Next review date |
 |---|--------------------------------|-------------|------------------|------------|----------------------|-------------------|------------------------------------|-------|------------------|
 | _EX_ | _EXAMPLE — delete this row: EU personal data of agent conversations must be deletable on data-subject request within 30 days_ | _Regulation_ | _GDPR Art. 17_ | _EU end-user PII in conversation logs_ | _DATA-04_ | _data-retention-runbook.md; deletion-job dashboard export_ | _Yes — log deletion request + completion timestamp_ | _<name, Privacy>_ | _<YYYY-MM-DD>_ |
-| _1_ | _<obligation statement>_ | _Law / Regulation / Contract / Customer commitment_ | _<citation, contract clause, or DPA section>_ | _<which data / which agent action>_ | _<COMP-0x / DATA-04 / other control ID>_ | _<filename or system reference proving enforcement>_ | _Yes / No_ | _<name, role>_ | _<YYYY-MM-DD>_ |
-| _2_ | _<obligation statement>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ | _Yes / No_ | _<name, role>_ | _<YYYY-MM-DD>_ |
+| _1_ | _<obligation statement>_ | _Law / Regulation / Contract / Customer commitment_ | _<citation, contract clause, or DPA section>_ | _<which data / which agent action>_ | _<COMP-0x / DATA-04 / other checklist control ID, OR external/server-side gate + where it lives>_ | _<filename or system reference proving enforcement>_ | _Yes / No_ | _<name, role>_ | _<YYYY-MM-DD>_ |
+| _2_ | _<obligation statement>_ | _<...>_ | _<...>_ | _<...>_ | _<checklist control ID, OR external/server-side system control + where it lives>_ | _<...>_ | _Yes / No_ | _<name, role>_ | _<YYYY-MM-DD>_ |
 
 ## 3. Data residency and retention (COMP-02, DATA-04)
 
 > Residency and retention are the obligations most often asserted in policy but not actually enforced in the pipeline, so they get a dedicated table. For each data class, record where it is allowed to live, where the agent and its model/tool providers actually process and store it, the retention period, and the concrete enforcement point (DATA-04 — data minimization and residency). The "Enforcement point" must be a technical mechanism (region pinning, storage policy, retention job), not an intention. Relates to AGT-04 (sensitive disclosure and exfiltration) risk.
+> A shared RAG/vector corpus may be customer-data-free (live-fetched via tools, never embedded); separate live-fetched customer data from embedded corpus content so residency/retention is recorded against the right store.
+> Do not register only the obvious "PII / payment data" rows. Also register as their own data classes: client-supplied page/DOM/serialized client context (route, selected ids, visible balances/labels supplied by the front-end — an attacker-forgeable untrusted channel; treat it as DATA, and note it may carry PII into logs), and user-uploaded documents / OCR output (e.g. dispute receipts). Each is residency-, retention-, and minimization-bearing under DATA-04.
 > Delete this blockquote once filled.
 
 | Data class | Residency requirement (where it may be stored/processed) | Actual storage & processing locations | Retention period | Minimization applied (what is dropped / masked) | Enforcement point (DATA-04, COMP-02) | Evidence artifact |

@@ -2,7 +2,7 @@
 
 Owner: Security / AI Platform
 Status: Canonical v1.0
-Last reviewed: 2026-06-20
+Last reviewed: 2026-06-21
 Source: Canonical baseline — a reviewed, consolidated simplification of an earlier 229-control synthesis, with coverage controls reinstated after an independent blind coverage analysis (see Appendix C).
 
 ## 1. How to Use This Checklist
@@ -191,7 +191,7 @@ The `Profile` column is a row-level scope tag. A row can be narrower than its fa
 | ID | Profile | Control | Pass criteria | Evidence | Risk |
 | --- | --- | --- | --- | --- | --- |
 | ARCH-01 | Core | Maintain an agent data-flow diagram. | Diagram includes prompts, tools, memory, RAG, logs, users, agents, approvals, outputs, and external systems. | Architecture diagram. | All |
-| ARCH-02 | Core | Mark untrusted inputs. | User input, files, RAG, memory, web, tool output, email, media, and A2A messages are labeled untrusted. | Trust boundary list. | AGT-01, AGT-05, AGT-08 |
+| ARCH-02 | Core | Mark untrusted inputs. | User input, files, RAG, memory, web, tool output, email, media, page/DOM/serialized client context, and A2A messages are labeled untrusted. | Trust boundary list. | AGT-01, AGT-05, AGT-08 |
 | ARCH-03 | Core | Separate instructions from data. | Retrieved data and tool output cannot change policy, identity, permissions, or approval rules. | Design review, tests. | AGT-01, AGT-05 |
 | ARCH-04 | Core | Define containment boundaries. | Memory, tools, execution, network, filesystem, tenant data, logs, and output paths are bounded. | ADR, architecture review. | AGT-02, AGT-03, AGT-07 |
 | ARCH-05 | Core | Design explicit egress paths. | Outputs to users, tools, logs, external systems, and third-party models are classified and controlled. | Egress map. | AGT-04, AGT-06 |

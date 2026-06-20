@@ -13,7 +13,7 @@
 
 > State what this record proves: that a kill switch exists for the agent and was actually exercised end-to-end (scope, steps, time-to-disable, verification). One drill record covers one drill run against one release/version. Keep it factual.
 
-This record documents a kill-switch drill for _<system / agent name>_ at version _<vN>_, exercising the ability to disable the agent (or specific components of it) without a full redeploy. It provides Gate 5 evidence for **OPS-05** (kill switch provided), **IR-01** (affected components can be disabled), and **OPS-06** (incident drills are run on a defined cadence).
+This record documents a kill-switch drill for _<system / agent name>_ at version _<vN>_, exercising the ability to disable the agent (or specific components of it) without a full redeploy. It provides Gate 5 evidence for **OPS-05** (kill switch provided), **IR-01** (affected components can be disabled), the **kill-switch + cadence** portion of **OPS-06** (incident drills are run on a defined cadence — the rotate-credentials / quarantine-state / investigate / safe-restore aspects of OPS-06 are evidenced in `incident-runbook.md`), and **CPS-04** (the agent cannot disable safety interlocks / emergency shutdown — see §2a; mark `N/A` with a reason for non-cyber-physical systems).
 
 - **Environment drilled:** _<production / staging / production-equivalent>_
 - **Drill type:** _<live in production / game-day in staging / tabletop + live partial>_
@@ -34,6 +34,23 @@ This record documents a kill-switch drill for _<system / agent name>_ at version
 > EXAMPLE row — delete: `| Tool / action | Yes | Set tools.payments.disabled=true in flag service, propagates in <30s | Platform on-call | Yes | Does not stop in-flight calls; see §4 |`
 
 - **Single "stop everything" control:** _<does one action disable the whole agent? describe it, or note that layers must be triggered individually>_
+
+> For any enforcement/guard layer (e.g. an inline input/output guard or firewall), state the kill semantics — disable vs. fail-closed — and confirm it does not fail open when the agent is partially disabled. A guard is a COMPENSATING control and does not replace server-side authorization; record its enforcement mode per environment (enforce / monitor / off — e.g. enforce in prod, monitor in staging) and whether a guard block/redaction surfaces correctly to the user and to logs (a block the UI renders as success is a tracked discrepancy, not a pass).
+> For draft/propose-only tools, state what the switch does and does not stop — e.g. it stops new drafts, but where the agent only proposes/drafts a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), that downstream execution path is separate and intentionally unaffected. Name where the real execution gate lives so a reviewer does not misread the kill as incomplete or as false assurance that execution was stopped.
+
+## 2a. Emergency shutdown / safety interlocks (CPS-04)
+
+> CPS-04 is distinct from OPS-05's off-switch: it concerns the agent being **unable to defeat an out-of-model safety mechanism** (interlock / emergency shutdown), not operators turning the agent off. If this system is not cyber-physical / safety-relevant, record the block `N/A` with a reason — do not delete it.
+
+- **Cyber-physical / safety-relevant system?** _Yes / No_ — if **No**, record _N/A_ and state why: _<e.g. software-only agent, no physical actuation or safety interlock in scope>_
+
+> For applicable systems only, complete the rows below (mark `N/A` with a reason for any that genuinely do not apply); evidence is an emergency drill.
+
+| Check | Method / signal | Expected | Observed | Pass? |
+|-------|-----------------|----------|----------|-------|
+| Agent cannot disable / override safety interlock | _<attempt + audit log>_ | _interlock holds; override denied_ | _<...>_ | _Y / N / N/A_ |
+| Fail-safe state transition tested | _<drill / simulation>_ | _system reaches fail-safe on fault_ | _<...>_ | _Y / N / N/A_ |
+| Emergency shutdown invoked and verified | _<drill record / sensor signal>_ | _shutdown completes, verified_ | _<...>_ | _Y / N / N/A_ |
 
 ## 3. Drill scenario and date
 
@@ -81,8 +98,16 @@ This record documents a kill-switch drill for _<system / agent name>_ at version
 | No connector / outbound traffic | _<egress logs / proxy>_ | _0 outbound to integration_ | _<...>_ | _Y/N_ |
 | No model invocations | _<inference logs / billing meter>_ | _0 invocations_ | _<...>_ | _Y/N_ |
 | In-flight tasks terminated/drained | _<queue / orchestrator state>_ | _drained / killed_ | _<...>_ | _Y/N_ |
+| UI / client correctly reflects disabled state (no false success/active) | _<client check / synthetic session>_ | _disabled state shown; no false success banner_ | _<...>_ | _Y/N_ |
+| Durable state stores (memory, queues, scheduled jobs) have stopped mutating | _<write logs / store diff>_ | _0 new writes after T_stop_ | _<...>_ | _Y/N_ |
 
 - **Evidence artifacts:** _<links to log snapshots, dashboard screenshots, query outputs proving inactivity>_
+
+## 6a. Safe restore / re-enable (OPS-06)
+
+> A kill switch that cannot be cleanly reversed is itself an operational gap. Verify the agent/component can be safely re-enabled after the kill. The rotate-credentials / quarantine-state / investigate aspects of OPS-06 are evidenced in `incident-runbook.md`; this record covers the kill-switch and safe-restore portion.
+
+- **Safe restore / re-enable verified:** _Yes / No / N/A_ — _<method, who re-enabled, post-restore verification that the agent resumed in a known-good state>_
 
 ## 7. Gaps found and remediation
 

@@ -11,7 +11,7 @@
 
 ## 1. Scope and Topology
 
-> Name every agent and trust domain that participates in this protocol. This artifact only carries evidence weight for the agents and channels listed here. If your system is single-agent (no agent-to-agent messaging), record that fact and mark the A2A controls _N/A_ with this document as the justification — do not leave them unassessed.
+> Name every agent and trust domain that participates in this protocol. This artifact only carries evidence weight for the agents and channels listed here. If your system is single-agent (no agent-to-agent messaging), record that fact and mark the A2A controls _N/A_ with this document as the justification — do not leave them unassessed — in that case complete §1 topology + the §9 disposition table only; sections 2-8 are N/A by that declaration and may be left empty (do not delete them).
 > Define "trust domain" for your deployment (e.g. same process, same tenant, partner org, third-party tool) — A2A-01 verification of trust domain depends on this being unambiguous.
 
 **Protocol name / version:** _<protocol id, vN>_
@@ -105,6 +105,7 @@
 ## 7. Re-Verification of Original User Intent (A2A-05)
 
 > Captures `Re-verification of original user intent/authorization at execution (A2A-05)`. Pass criterion: *internal requests do not bypass user intent or authorization checks.* This defends against the confused-deputy problem: an internal agent-to-agent message must not be able to perform an action the originating user was never authorized to request. A2A-05 depends on PROMPT-06 and ID-02. Related risks: AGT-03, AGT-08.
+> Even single-agent: if the agent makes authorized backend calls on the user's behalf, the confused-deputy / authorization re-check still applies — record where it is enforced or cross-reference the tool/identity evidence rather than marking it blanket _N/A_. Name the real isolation boundary — tenant, per-customer, or per-user — and how cross-boundary access fails closed; single-tenant systems are often still multi-customer, so do not just name the credential audience. Where the agent only proposes/drafts a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), state that explicitly and name where the real execution gate lives — that location is the evidence, not a bare _N/A_.
 
 - **How original user intent/authorization is carried:** _<e.g. `intent_ref` token, signed authorization context>_
 - **Re-check performed at execution time:** _<what is re-verified just before the side-effecting action, by which component>_

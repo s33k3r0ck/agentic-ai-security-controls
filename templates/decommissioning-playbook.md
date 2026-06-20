@@ -39,6 +39,7 @@
 | Memory | _<long-term / episodic memory store>_ | _<location>_ | _<delete>_ | §4 |
 | Vector store / RAG source | _<index, collection>_ | _<location>_ | _<delete / detach>_ | §4 |
 | Tool / connector | _<integration, MCP server, API>_ | _<location>_ | _<disconnect>_ | §3/§6 |
+| Guard / firewall / sidecar | _<inline input/output guard or filtering layer with its own credentials, policies, logs, or invocation path>_ | _<location>_ | _<disconnect; revoke its creds (§3); dispose its policies/logs (§4)>_ | §3/§4/§6 |
 | Schedule / trigger | _<cron, webhook, queue>_ | _<location>_ | _<remove>_ | §6 |
 | Downstream consumer | _<service / team that calls this agent>_ | _<owner>_ | _<notify / cutover>_ | §5 |
 | Logs / telemetry | _<log stream, dashboard>_ | _<location>_ | _<retain per policy>_ | §4 |
@@ -78,6 +79,8 @@
 | Operational data stores | _<action>_ | _<policy id>_ | _<destination>_ | _Yes / No_ | _<YYYY-MM-DD>_ |
 | Logs / audit trail | _<action>_ | _<policy id>_ | _<destination>_ | _Yes / No_ | _<YYYY-MM-DD>_ |
 | Backups / snapshots | _<action>_ | _<policy id>_ | _<destination>_ | _Yes / No_ | _<YYYY-MM-DD>_ |
+
+> **Per-namespace completeness:** for per-customer or per-tenant namespaced stores (e.g. durable assistant memory), name the real isolation boundary — tenant, per-customer, or per-user — and state how completeness was verified across ALL namespaces (e.g. post-deletion enumeration returns zero), not just a single sample. A blanket "Yes" can mask partial deletion (some namespaces missed), which is both an erasure failure and a re-animation / leak risk.
 
 > **Retention note:** logs and audit trail are typically *retained*, not deleted, so the tombstone (§7) and any future investigation remain provable. State this explicitly: _<what is retained, where, for how long, under which policy>_.
 

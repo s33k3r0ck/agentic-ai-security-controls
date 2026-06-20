@@ -83,6 +83,19 @@ selection, multi-step reasoning — is genuinely required; what was the non-agen
 | Customer / confidential business data | _Yes / No_ | _<...>_ | _<...>_ |
 | Other | _<specify>_ | _<...>_ | _<...>_ |
 
+**Isolation / access boundary:** _<what principal is data scoped to (per-tenant / per-customer / per-user / none), and where is that enforced (server-side authz / agent / model)?>_
+
+> Name the real isolation boundary — tenant, per-customer, or per-user — and how cross-boundary access fails
+> closed. Single-tenant systems are often still multi-customer; do not just name the credential audience.
+> Model output must not be the authorization boundary.
+
+**Untrusted input surfaces / channels:** _<ingest channels with a trusted/untrusted flag, e.g. user text (untrusted), page/DOM/serialized client context (untrusted), conversation history (untrusted), uploaded files / OCR (untrusted), RAG content (untrusted), tool output (untrusted)>_
+
+> This is intake hygiene that seeds the downstream injection threat model — list every channel data enters by,
+> not just the data classes above. Page / DOM / serialized client context (route, selected ids, visible
+> balances/labels supplied by the front-end) is an attacker-forgeable untrusted channel. Treat it as DATA;
+> client-supplied identifiers must be re-authorized server-side and never trusted for authorization (AGT-01, AGT-03).
+
 ## 5. High-Risk Actions the Agent May Take (GOV-03)
 
 > Enumerate the high-impact actions the agent is permitted to perform. These are the actions an attacker
@@ -90,19 +103,23 @@ selection, multi-step reasoning — is genuinely required; what was the non-agen
 > trigger. Each permitted high-risk action should map to a guardrail and (for A0/A1/A2) a human approval
 > point defined in §2. If an action is NOT permitted, list it as "No" — that boundary is itself evidence.
 
-| High-risk action category | Permitted? | Examples in this use case | Guardrail / approval required |
-| --- | --- | --- | --- |
-| Writes / mutations | _Yes / No_ | _<...>_ | _<...>_ |
-| Deletes | _Yes / No_ | _<...>_ | _<...>_ |
-| Sends (email / message / external comms) | _Yes / No_ | _<...>_ | _<...>_ |
-| Approvals / sign-offs | _Yes / No_ | _<...>_ | _<...>_ |
-| Code / command execution | _Yes / No_ | _<...>_ | _<...>_ |
-| Configuration / infrastructure changes | _Yes / No_ | _<...>_ | _<...>_ |
-| Money movement / financial transactions | _Yes / No_ | _<...>_ | _<...>_ |
-| Credential / access management | _Yes / No_ | _<...>_ | _<...>_ |
+| High-risk action category | Permitted? | Agent role | Examples in this use case | Guardrail / approval required |
+| --- | --- | --- | --- | --- |
+| Writes / mutations | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
+| Deletes | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
+| Sends (email / message / external comms) | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
+| Approvals / sign-offs | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
+| Code / command execution | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
+| Configuration / infrastructure changes | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
+| Money movement / financial transactions | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
+| Credential / access management | _Yes / No_ | _Executes / Proposes-drafts only / Confirms then executes_ | _<...>_ | _<...>_ |
 
+> **Agent role:** where the agent only proposes/drafts a high-risk action and real execution happens
+> out-of-band (e.g. behind step-up auth / SCA in a downstream system), state that explicitly and name where
+> the real execution gate lives — that location is the evidence, not a bare Yes/No.
+>
 > **Example row (delete this example before sign-off):**
-> `Sends (external comms) | Yes | Agent emails order-status updates to customers | Templated content only; send capped at 1/customer/day; security-owner approval to widen.`
+> `Money movement / financial transactions | Yes | Proposes-drafts only | Agent drafts a payment; customer executes it | Real gate is out-of-band: PSD2 SCA step-up in the payment UI, per-payment cap, new-payee cooling-off — the agent never executes.`
 
 ## 6. Compliance Scope (COMP-01)
 
@@ -113,6 +130,8 @@ selection, multi-step reasoning — is genuinely required; what was the non-agen
 | Obligation | Applies? | Detail / reference |
 | --- | --- | --- |
 | Applicable laws / regulations | _Yes / No_ | _<e.g. GDPR, HIPAA, sector regs — cite the specific obligation>_ |
+| Lawful basis for processing | _Yes / No_ | _<the lawful basis relied on for each data class in scope (e.g. consent, contract, legal obligation)>_ |
+| Breach / incident-notification duties | _Yes / No_ | _<notification timelines and which regulator(s) / parties must be notified>_ |
 | Contractual / customer commitments | _Yes / No_ | _<contract clauses, DPAs, SLAs constraining agent behaviour>_ |
 | Data residency | _Yes / No_ | _<regions where data must stay / processing must occur>_ |
 | Retention / deletion requirements | _Yes / No_ | _<how long inputs, memory, logs must or must not be kept>_ |
@@ -154,8 +173,16 @@ selection, multi-step reasoning — is genuinely required; what was the non-agen
 | A3 / high-risk residual risk acceptance required? | _Yes / No_ |
 | Residual risk accepted by | _<name, role — required if "Yes" above; otherwise N/A>_ |
 | Risk acceptance rationale | _<why the residual risk is acceptable, with compensating controls — or N/A>_ |
+| Compensating controls / known residual discrepancies the decision relies on | _<compensating controls the Go depends on and any tracked known discrepancies — or N/A>_ |
 | Decision date | _<YYYY-MM-DD>_ |
 | Re-review trigger | _<scope change, autonomy increase, new high-risk action, or scheduled date>_ |
+
+> **Compensating controls / known residual discrepancies.** If the decision leans on an inline guard /
+> firewall layer, record (a) whether an inbound-prompt and/or outbound-response guard is in the path, (b) its
+> enforcement mode per environment (enforce / monitor / off — e.g. enforce in prod, monitor in staging), and
+> (c) whether a guard block/redaction surfaces correctly to the user and to logs. A guard decision the UI
+> renders as success (block-but-UI-shows-success) is a tracked discrepancy, not a pass. The guard is a
+> COMPENSATING control and does not replace server-side authorization.
 
 ## Sign-off
 

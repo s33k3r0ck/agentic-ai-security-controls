@@ -182,7 +182,7 @@ window.CHECKLIST = {
       "family": "Architecture",
       "profile": "Core",
       "control": "Mark untrusted inputs.",
-      "pass": "User input, files, RAG, memory, web, tool output, email, media, and A2A messages are labeled untrusted.",
+      "pass": "User input, files, RAG, memory, web, tool output, email, media, page/DOM/serialized client context, and A2A messages are labeled untrusted.",
       "evidence": "Trust boundary list.",
       "risk": "AGT-01, AGT-05, AGT-08",
       "dependsOn": [

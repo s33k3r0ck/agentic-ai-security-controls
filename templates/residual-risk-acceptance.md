@@ -46,6 +46,7 @@
 
 **Gap — what the control requires vs. what is in place**
 > State precisely what the control demands and where the implementation falls short. Be specific enough that a reviewer can judge the exposure without reading the code.
+> State the control's pass criteria verbatim from `docs/checklist.md` and show where the implementation falls short of THAT criterion — if the real risk does not match the named control's pass criteria, you have picked the wrong control ID.
 
 _<description of the unmet requirement>_
 
@@ -55,6 +56,7 @@ _<description of the unmet requirement>_
 - Risk: _<what can go wrong>_
 - Affected assets / users / systems: _<scope and blast radius>_
 - Related agentic risk: _<AGT-0x, or "n/a">_
+- Regulatory / contractual exposure: _<obligation impacted (e.g. PSD2, DORA ICT-incident reporting, GDPR minimization), or "none">_
 - Likelihood: _Low / Medium / High_  ·  Impact severity: _Low / Medium / High_
 
 **Compensating controls in place**

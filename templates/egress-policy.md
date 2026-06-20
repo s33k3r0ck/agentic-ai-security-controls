@@ -25,7 +25,7 @@
 
 ## 2. Egress destination / output sink inventory (ARCH-05, OUT-01)
 
-> Inventory every place data can leave the agent's trust boundary. This is the OUT-01 sink inventory and the ARCH-05 egress map combined. Cover all sink categories the checklist names: users, tools, logs, external systems, and third-party model APIs — and concrete sink types such as HTML, Markdown, SQL, shell, code, config, workflow, ticket, email, and approval sinks. Each row must trace to a real, named destination. Mark whether the destination is internal or external to your trust boundary; external + sensitive data is the highest exfiltration risk (AGT-04, AGT-06). Delete this guidance when filled.
+> Inventory every place data can leave the agent's trust boundary. This is the OUT-01 sink inventory and the ARCH-05 egress map combined. Cover all sink categories the checklist names: users, tools, logs, external systems, and third-party model APIs — and concrete sink types such as HTML, Markdown, SQL, shell, code, config, workflow, ticket, email, and approval sinks. Each row must trace to a real, named destination. Mark whether the destination is internal or external to your trust boundary; external + sensitive data is the highest exfiltration risk (AGT-04, AGT-06). Where the agent only proposes/drafts a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), state that explicitly in Notes and name where the real execution gate lives — that location is the evidence, not a bare Yes/No. Such a destination is inventoried with the boundary noted (e.g. "draft only; executed outside boundary under step-up/SCA"), not listed as agent-controlled egress. Delete this guidance when filled.
 
 | Sink ID | Sink type | Destination (concrete) | Category (user / tool / log / external system / model API) | Internal or external | Reachable data classes | Notes |
 |---------|-----------|------------------------|------------------------------------------------------------|----------------------|------------------------|-------|
@@ -37,17 +37,17 @@
 
 ## 3. Allow-list: destination × data classification × conditions (DATA-02)
 
-> This is the core of the policy and the primary evidence for DATA-02. List every PERMITTED combination of destination (from §2) and data classification, with the conditions under which it is allowed. Everything not listed here is denied by default — do not enumerate denials. Reference your organization's data classification scheme (e.g. Public, Internal, Confidential, Restricted/PII). Conditions are concrete gates: redaction applied, user authenticated and authorized, human approval, encryption in transit, contractual/DPA coverage for third-party APIs. If a destination may receive a class only after transformation, say so in Conditions. Delete this guidance when filled.
+> This is the core of the policy and the primary evidence for DATA-02. List every PERMITTED combination of destination (from §2) and data classification, with the conditions under which it is allowed. Everything not listed here is denied by default — do not enumerate denials. Reference your organization's data classification scheme (e.g. Public, Internal, Confidential, Restricted/PII). Conditions are concrete gates: redaction applied, user authenticated and authorized, human approval, encryption in transit, contractual/DPA coverage for third-party APIs. If a destination may receive a class only after transformation, say so in Conditions. For user / chat sinks the per-principal scope is a required allow-list condition: name the real isolation boundary — tenant, per-customer, or per-user — and how cross-boundary access fails closed. Single-tenant systems are often still multi-customer; do not just name the credential audience. Delete this guidance when filled.
 
-| Sink ID (from §2) | Permitted data classification | Conditions / required controls | Approved by | Approval date |
-|-------------------|-------------------------------|--------------------------------|-------------|---------------|
-| _<S-01>_ | _<e.g. Public, Internal>_ | _<e.g. TLS; user authorized; DLP scan passes>_ | _<name, role>_ | _<YYYY-MM-DD>_ |
-| _<S-02>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
-| _<S-03>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
+| Sink ID (from §2) | Permitted data classification | Scope / principal binding | Conditions / required controls | Approved by | Approval date |
+|-------------------|-------------------------------|---------------------------|--------------------------------|-------------|---------------|
+| _<S-01>_ | _<e.g. Public, Internal>_ | _<e.g. authenticated customer principal only; cross-customer denied server-side, fail-closed>_ | _<e.g. TLS; user authorized; DLP scan passes>_ | _<name, role>_ | _<YYYY-MM-DD>_ |
+| _<S-02>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
+| _<S-03>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
 
 **Default rule:** Any (destination, data classification) pair not present in this table is **DENIED**. New rows require the approval process in §5.
 
-> EXAMPLE — delete this row: `S-99 | Internal-Confidential (redacted only) | PII/secret redaction applied (§4); provider under signed DPA; TLS 1.2+ | Jane Doe, Security Lead | 2026-06-20`
+> EXAMPLE — delete this row: `S-99 | Internal-Confidential (redacted only) | authenticated customer principal only; cross-customer denied server-side, fail-closed | PII/secret redaction applied (§4); provider under signed DPA; TLS 1.2+ | Jane Doe, Security Lead | 2026-06-20`
 
 ## 4. Redaction / DLP before egress
 
@@ -59,10 +59,12 @@
 - **Fail mode:** _Fail-closed (block) / Fail-open (allow)_ — _<justification if not fail-closed>_
 - **Coverage gaps / known limitations:** _<e.g. free-text fields, attachments>_
 
-| Sink ID (from §2) | Redaction/DLP applied? | Rule set / detectors | Fail mode |
-|-------------------|------------------------|----------------------|-----------|
-| _<S-01>_ | _Yes / No / N/A_ | _<...>_ | _Closed / Open_ |
-| _<S-02>_ | _<...>_ | _<...>_ | _<...>_ |
+> If an inline guard / firewall layer sits on the egress path, record (a) whether an inbound-prompt and/or outbound-response guard is in the path, (b) its enforcement mode per environment (enforce / monitor / off — e.g. enforce in prod, monitor in staging), and (c) whether a guard block/redaction surfaces correctly to the user and to logs. A guard decision the UI renders as success (block-but-UI-shows-success) is a tracked discrepancy, not a pass — carry it as a §6 monitored condition and a §7 residual. The guard is a COMPENSATING control and does not replace server-side authorization. Use the "Mode (per env)" column below to make a MONITOR-in-staging split explicit. Delete this guidance when filled.
+
+| Sink ID (from §2) | Redaction/DLP applied? | Rule set / detectors | Mode (per env) | Fail mode |
+|-------------------|------------------------|----------------------|----------------|-----------|
+| _<S-01>_ | _Yes / No / N/A_ | _<...>_ | _Enforce / Monitor / Off per env_ | _Closed / Open_ |
+| _<S-02>_ | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
 
 ## 5. Approval process to add a new egress destination
 
@@ -88,6 +90,7 @@
 | Anomalous / high-volume egress | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
 | Unsafe / high-risk tool sequence | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
 | Egress to non-allow-listed destination | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
+| Guard block/redact decision not reflected in delivered output (guard-decision vs delivered-output reconciliation) | _<...>_ | _<...>_ | _<...>_ | _<...>_ |
 
 - **Coverage statement:** _<confirm every external sink in §2 is observable by at least one rule above; note any blind spots>_
 - **Validation:** _<how/when these alerts were last tested, e.g. egress-policy tests or red-team drill, date>_

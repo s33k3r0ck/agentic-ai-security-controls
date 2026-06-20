@@ -18,7 +18,7 @@
 > Delete this guidance block once filled.
 
 - **System / agent under standard:** _<system or agent name>_
-- **Components in scope (log producers):** _<e.g. orchestrator, tool-runner, RAG retriever, memory service>_
+- **Components in scope (log producers):** _<e.g. orchestrator, tool-runner, RAG retriever, memory service, inline input/output guard layer>_
 - **Out of scope (and why):** _<components excluded + reason, or "none">_
 - **Related artifacts:** _<links to architecture diagram, threat model, IR runbook>_
 
@@ -41,13 +41,21 @@
 | `tool` | Tool / function / MCP server invoked (or "reasoning" if none) | Yes | _<tool dispatcher>_ | _orders.lookup_ |
 | `parameters` | Tool inputs, **sanitized/redacted** per §5 | Yes | _<tool wrapper + redactor>_ | _{order_id: "<redacted>"}_ |
 | `decision` | Chosen action and, where available, rationale | Yes | _<model output / policy engine>_ | _"call orders.lookup"_ |
+| `confidence` / `anomaly` | Model confidence and/or anomaly signals raised for this step | Yes | _<model output / anomaly detector>_ | _confidence=0.71, anomaly=none_ |
+| `policy_decision` | Distinct policy-engine / guard-layer verdict (allow / block / redact), with the guard's enforce-vs-monitor mode per environment | Yes | _<policy engine / inline guard layer>_ | _allow (guard: enforce-prod)_ |
 | `approval` | Whether human/policy approval was required, and its result | Yes | _<approval gate>_ | _required=true, approved_by=bob_ |
 | `outcome` | Result, error, or rejection of the action | Yes | _<tool response handler>_ | _success / denied / error:timeout_ |
+| `output` | What the agent actually returned / rendered to the user or downstream system (redacted per §5), distinct from `outcome` | Yes | _<response handler / UI surface>_ | _"Your order shipped on..."_ |
 | `correlation_id` / `trace_id` | ID linking related events across components for reconstruction | Yes | _<tracing context>_ | _trace-9c1d..._ |
 | `timestamp` | Event time, source clock, and timezone (UTC recommended) | Yes | _<emitter clock>_ | _2026-06-20T14:03:11Z_ |
 
 > Add rows for any system-specific required fields (e.g. `model`, `prompt_hash`, `cost`, `policy_version`).
-> Delete this guidance block once filled.
+> Where actions can be driven by untrusted input channels, add an `input_provenance` field (e.g.
+> `client_context_hash`, `uploaded_doc_id`) so an action can be traced back to the client-supplied page/DOM
+> context or uploaded/OCR'd document that drove it. Page/DOM/serialized client context (route, selected ids,
+> visible balances/labels supplied by the front-end) is an attacker-forgeable untrusted channel — treat it as
+> DATA; client-supplied identifiers must be re-authorized server-side and never trusted for authorization
+> (AGT-01, AGT-03). Delete this guidance block once filled.
 
 ## 3. Integrity protection (OPS-02, ARCH-06)
 
@@ -112,9 +120,11 @@
 - **Reconstruction question this log set answers:** _"given session/trace _<id>_, enumerate every tool call, approval, and outcome and the actors/resources affected."_
 - **Primary pivot keys:** _correlation_id / trace_id, session, agent, actor_
 - **How affected resources are enumerated:** _<e.g. join tool + parameters + outcome across the trace>_
+- **Cross-system reconstruction (actions executed outside the agent):** _<join key (e.g. trace_id) linking the agent's draft/proposal to the downstream execution record>_. Where the agent only proposes/drafts a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), name where the real execution gate lives — that location is the evidence, not a bare Yes/No — and confirm the financially-significant action is still reconstructable end-to-end across log domains.
+- **Guard-vs-UI reconstruction:** _<for a guard block/redaction, can you correlate the `policy_decision` verdict with the `output` actually rendered to the user?>_. A guard decision the UI renders as success (block-but-UI-shows-success) is a tracked discrepancy, not a pass; the guard is a COMPENSATING control and does not replace server-side authorization.
 - **Link to IR runbook step using these logs:** _<link>_
 - **Reconstruction drill evidence:** _<date + result of last tabletop / replay exercise>_
-- **Known reconstruction gaps:** _<fields or components that would leave a blind spot>_
+- **Known reconstruction gaps:** _<fields or components that would leave a blind spot — e.g. downstream execution records outside the agent's log domain, or actions driven by untrusted client-context / uploaded-doc input where `input_provenance` is unrecorded>_
 
 ## 7. Log sinks and access controls
 

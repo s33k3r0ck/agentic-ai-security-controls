@@ -41,6 +41,17 @@ This policy governs durable memory for _<system / agent name>_ operating at auto
 - **Rejected-write handling:** _<dropped / quarantined / flagged for review>_ — see §5 for quarantine.
 - **Logging:** every durable write attempt is logged with _<who, what, source, decision, timestamp>_ at _<log location>_.
 
+> Enumerate every upstream channel that can influence a durable write and how each is neutralized before persistence. Each untrusted channel (conversation history, uploaded/OCR'd content, RAG content, page/DOM/serialized client context) is a documented injection vector (ARCH-02) and must be treated as data, never as trusted directives, before it can reach the store.
+
+| Upstream channel that can influence a write | Trust level | Neutralized how (data-only / stripped / never persisted) |
+|---------------------------------------------|-------------|----------------------------------------------------------|
+| _<conversation history>_ | _<trusted / untrusted>_ | _<data-only / stripped / never persisted>_ |
+| _<uploaded / OCR'd content>_ | _<trusted / untrusted>_ | _<data-only / stripped / never persisted>_ |
+| _<RAG / retrieved content>_ | _<trusted / untrusted>_ | _<data-only / stripped / never persisted>_ |
+| _<page / DOM / serialized client context>_ | _<trusted / untrusted>_ | _<data-only / stripped / never persisted>_ |
+
+> If the write-gate relies on a shared guard/firewall, state its mode (enforce vs monitor) per environment and confirm a blocked write is logged as blocked and not reported as success to the UI/caller. A guard decision the UI renders as success (block-but-UI-shows-success) is a tracked discrepancy, not a pass; the guard is a COMPENSATING control and does not replace the write-gate's own checks.
+
 | Field | Value |
 |-------|-------|
 | Writes scanned + policy-checked before persistence? | _Yes / No_ |
@@ -50,12 +61,13 @@ This policy governs durable memory for _<system / agent name>_ operating at auto
 
 ## 4. Isolation and encryption (MEM-02)
 
-> Demonstrate memory is separated by tenant, user, environment, and sensitivity, and protected at rest and in transit. Cross-boundary leakage lets one user's poisoned or private memory reach another (AGT-03, AGT-05). Reference the identity/segmentation control that scopes access (ID-03). Evidence = isolation tests + encryption config.
+> Demonstrate memory is separated by tenant, user, environment, and sensitivity, and protected at rest and in transit. Cross-boundary leakage lets one user's poisoned or private memory reach another (AGT-03, AGT-05). Reference the identity/segmentation control that scopes access (ID-03). Evidence = isolation tests + encryption config. Name the real isolation boundary — tenant, per-customer, or per-user — and how cross-boundary access fails closed. Single-tenant systems are often still multi-customer; do not just name the credential audience. For a single-tenant multi-customer system, per-customer is the load-bearing boundary: mark Tenant N/A with a reason, treat the User / customer row as primary, and add the explicit fail-closed row below with a negative-test "Verified by".
 
 | Boundary | How enforced | Verified by |
 |----------|--------------|-------------|
-| Tenant | _<namespace / separate index / row-level scoping>_ | _<isolation test ref>_ |
-| User | _<per-user namespace / key>_ | _<test ref>_ |
+| Tenant | _<namespace / separate index / row-level scoping; or N/A — reason>_ | _<isolation test ref>_ |
+| User / customer | _<per-user / per-customer namespace / key>_ | _<test ref>_ |
+| Cross-principal (foreign-id) access fails closed | _<server-side denial of foreign user/customer ids>_ | _<negative-test ref — e.g. 0 leaks>_ |
 | Environment (dev/stage/prod) | _<separate stores / credentials>_ | _<test ref>_ |
 | Sensitivity class | _<separate stores or access tiers per class>_ | _<test ref>_ |
 
@@ -112,13 +124,15 @@ This policy governs durable memory for _<system / agent name>_ operating at auto
 - **Versioning:** _<every write versioned / append-only log / point-in-time restore>_
 - **Integrity mechanism:** _<checksum / digital signature>_ — verified _<on read / on recall / on restore>_
 - **High-impact recall gate:** memory that can drive high-impact actions is surfaced only when it carries _<sufficient provenance>_ **plus** a _human-verified_ tag.
+
+> If memory cannot drive high-impact actions — e.g. high-risk actions are draft/propose-only and execution happens out-of-band behind step-up auth / SCA outside the agent — answer the recall-gate row "N/A — memory does not drive high-impact actions" with that reason rather than a misleading Yes or a bare No; state explicitly where the real execution gate lives (cross-ref §1 "whether memory feeds high-impact actions").
 - **Tamper-detection behavior:** on a failed integrity check the system _<rejects / quarantines / alerts>_.
 
 | Field | Value |
 |-------|-------|
 | Writes versioned? | _Yes / No_ |
 | Integrity verified on use (not just on write)? | _Yes / No_ |
-| High-impact memory requires provenance + human-verified tag? | _Yes / No_ |
+| High-impact memory requires provenance + human-verified tag? | _Yes / No / N/A — memory does not drive high-impact actions (state where the real execution gate lives)_ |
 | Verification-test evidence link | _<link>_ |
 
 ## 9. Residual risks and accepted gaps

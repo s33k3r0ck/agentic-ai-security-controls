@@ -8,6 +8,40 @@ to the control set (see "Versioning" in the [README](README.md)).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-21
+
+Patch release — **control IDs unchanged** (still 114 controls / 21 Release Floor). Hardens the
+evidence-package templates after a full fill-through against a realistic system, and adds the
+page/DOM/serialized-client-context channel to ARCH-02.
+
+### Changed
+
+- **Evidence-package templates hardened** — every one of the 23 `templates/` files was filled
+  end-to-end against a realistic bank-chatbot fixture (single customer-facing agent; high-risk
+  actions drafted by the agent but executed out-of-band behind step-up auth; durable per-customer
+  memory; a shared, customer-data-free RAG corpus; an inline input/output guard layer; regulated
+  EU deployment) to find where a template could not faithfully capture what its backed controls
+  require. The resulting body edits (no control-ID or structural changes) close literal
+  pass-criteria omissions and add consistent guidance for four recurring patterns:
+  - **Literal pass-criteria fields** now present: `agent-registry.csv` `profile`;
+    `tool-inventory.csv` `sink_type` / `execution_type` / `gate_mechanism`;
+    `agentic-log-standard.md` `policy_decision` / `confidence` / `output`; an Approvals/HITL-gate
+    node in `agent-data-flow.md`; `tool output` + `A2A` quarantine rows in `incident-runbook.md`;
+    a CPS-04 applicability block and a safe-restore check in `kill-switch-drill.md`; COMP-01
+    lawful-basis and breach-notification rows in `use-case-intake.md`; a `source_version` field in
+    `rag-source-registry.csv`.
+  - **Inline guard / firewall layer** — a place to record enforce-vs-monitor mode per environment
+    and the "guard blocks but the UI shows success" discrepancy, framed as a compensating control,
+    not a replacement for server-side authorization.
+  - **Action gates outside the agent** — draft/propose-only actions name where the real
+    out-of-band execution gate lives (e.g. step-up auth), rather than a bare Yes/No.
+  - **Isolation boundary** — name the real boundary (tenant / per-customer / per-user); single-tenant
+    systems are often still multi-customer.
+  - **Page/DOM/serialized client context** treated as an attacker-forgeable untrusted channel across
+    the threat-model, data-flow, intake, and logging templates.
+- **ARCH-02 pass criteria** now list **page/DOM/serialized client context** among the inputs that must
+  be labeled untrusted (regenerated into `docs/checklist.md`).
+
 ## [1.1.0] - 2026-06-20
 
 Minor release — **control IDs unchanged** since 1.0.0. Adds evidence-package templates and
@@ -105,6 +139,7 @@ Initial public release — the _Canonical v1.0_ checklist edition.
 - `docs/build-evidence.md` — provenance of how the checklist was built and reviewed
   (multi-agent synthesis, blind review, coverage analysis).
 
-[Unreleased]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/s33k3r0ck/agentic-ai-security-controls/releases/tag/v1.0.0

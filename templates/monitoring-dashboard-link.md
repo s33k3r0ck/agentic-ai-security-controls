@@ -42,15 +42,19 @@
 ### 2.2 Exfiltration & unsafe tool sequences — OPS-04 (AGT-02, AGT-04)
 
 > OPS-04 pass-criteria: a sensitive read followed by an external write, and unusual high-risk tool chains, must alert. These catch data exfiltration (AGT-04) and dangerous multi-step tool orchestration (AGT-02). Define what "sensitive source" and "external sink" mean for this system so the threshold is unambiguous.
+> For multi-customer / multi-principal systems, also alert on a tool call carrying a foreign principal identifier (e.g. a foreign account id) that must fail closed server-side — the textbook isolation-breach / privilege-escalation signal (add a row such as "cross-customer / foreign-principal access attempt (fail-closed denials)"). Where the agent only drafts/proposes a high-risk action and real execution happens out-of-band (e.g. behind step-up auth / SCA in a downstream system), state that explicitly and alert on draft→execute boundary violations — name where the real execution gate lives, that location is the evidence, not a bare Yes/No.
 
 | Alert name | Signal | Threshold | Severity | Dashboard | Rule / definition link |
 |---|---|---|---|---|---|
 | _<name>_ | _<sensitive read → external write sequence>_ | _<e.g. any occurrence>_ | _<severity>_ | _<dashboard>_ | _<link>_ |
 | _<name>_ | _<high-risk tool chain / anomalous tool ordering>_ | _<threshold>_ | _<severity>_ | _<dashboard>_ | _<link>_ |
+| _<name>_ | _<inline guard block/redact decision not reflected in delivered output (guard-decision vs delivered-output reconciliation)>_ | _<e.g. any occurrence>_ | _<severity>_ | _<dashboard>_ | _<link>_ |
+
+> **Inline guard / firewall layer.** If an inbound-prompt and/or outbound-response guard is in the path, record (a) whether it is present, (b) its enforcement mode per environment (enforce / monitor / off — e.g. enforce in prod, monitor in staging), and (c) whether a guard block/redaction surfaces correctly to the user and to logs. A guard decision the UI renders as success (block-but-UI-shows-success) is a tracked discrepancy, not a pass — the last row above exists to alert on it. The guard is a COMPENSATING control and does not replace server-side authorization.
 
 ### 2.3 Resource / denial-of-wallet abuse — RES-03 (AGT-11)
 
-> RES-03 pass-criteria: alerts must cover token spikes, tool-call spikes, retry storms, queue growth, memory growth, and quota depletion. This is the denial-of-wallet / resource-exhaustion surface (AGT-11). Set thresholds against an observed baseline, not a guess — note the baseline window you used.
+> RES-03 pass-criteria: alerts must cover token spikes, tool-call spikes, retry storms, queue growth, memory growth, and quota depletion. This is the denial-of-wallet / resource-exhaustion surface (AGT-11). Set thresholds against an observed baseline, not a guess — note the baseline window you used. Queue growth and memory growth apply where applicable (long-running / queued runtimes); for a per-request runtime with no agent-side job queue, mark those rows `N/A` with a one-line reason rather than forcing a strained mapping. For request-per-customer systems, scope thresholds per authenticated customer (not only aggregate) so single-customer abuse is caught.
 
 | Alert name | Signal | Threshold | Severity | Dashboard | Rule / definition link |
 |---|---|---|---|---|---|
@@ -102,12 +106,12 @@
 
 ## 5. Coverage Confirmation
 
-> A one-line attestation per control that its alerts exist, fire to a real owner, and were reviewed at the stated cadence. This is the summary a release reviewer reads first. Use `N/A` only with a reason recorded here.
+> A one-line attestation per control that its alerts exist, fire to a real owner, and were reviewed at the stated cadence. This is the summary a release reviewer reads first. Use `N/A` only with a reason recorded here. Where a control's monitoring leans on an inline guard/firewall, state its enforcement mode per environment in the Notes (e.g. "guard: enforce in prod, monitor in staging") — a "Yes" attestation can be true in prod while a non-prod environment silently degrades to monitor-only.
 
 | Control | Monitored? | Evidence (alert rows / dashboard) | Notes |
 |---|---|---|---|
 | OPS-03 — goal drift & rogue behaviour | _Yes / No / N/A_ | _<§2.1>_ | _<notes>_ |
-| OPS-04 — exfiltration & unsafe tool sequences | _Yes / No / N/A_ | _<§2.2>_ | _<notes>_ |
+| OPS-04 — exfiltration & unsafe tool sequences | _Yes / No / N/A_ | _<§2.2>_ | _<notes; e.g. guard enforce-mode per env>_ |
 | RES-03 — resource abuse | _Yes / No / N/A_ | _<§2.3>_ | _<notes>_ |
 | RAG-06 — RAG source/embedding poisoning & drift | _Yes / No / N/A_ | _<§2.4>_ | _<notes>_ |
 
