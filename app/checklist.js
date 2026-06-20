@@ -261,7 +261,11 @@ var IC = {
       '">' +
       '<span class="st' +
       (stCls[st] ? ' ' + stCls[st] : '') +
-      '" data-st="' +
+      '"' +
+      (st === 'Accepted Risk'
+        ? ' title="Accepted Risk — time-bound waiver; set via a loaded file, not by clicking"'
+        : '') +
+      ' data-st="' +
       c.id +
       '">' +
       esc(st || 'set') +
@@ -738,6 +742,7 @@ var IC = {
     }
     var st = e.target.closest('.st');
     if (st) {
+      if (st.classList.contains('ar')) return; // Accepted Risk is a deliberate waiver: set via a loaded file, not by click
       var id = st.getAttribute('data-st'),
         ns = STATES[(STATES.indexOf(status[id] || '') + 1) % STATES.length];
       if (ns) status[id] = ns;

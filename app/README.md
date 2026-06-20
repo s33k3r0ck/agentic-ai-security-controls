@@ -3,8 +3,7 @@
 A self-contained, **offline** reader for the Agentic SDLC Hardening Checklist. No
 build step, no server, no network: open `checklist.html` in any browser and it
 runs. This document is for people **editing the app or the data**. For the
-end-user feature tour and the project overview, see the root [`README.md`](../README.md);
-for cross-agent conventions see [`AGENTS.md`](../AGENTS.md).
+end-user feature tour and the project overview, see the root [`README.md`](../README.md).
 
 ## Files and roles
 
@@ -260,9 +259,8 @@ fields). Run `node build.js` — it regenerates the Section 4 and Appendix D tab
 rejects any control whose `risk` references an unknown id. The reader's tooltips and
 legend grid update on the next page load; no other file needs touching.
 
-After any structural change, follow the **"Keeping docs in sync"** rule in
-[`AGENTS.md`](../AGENTS.md): reflect it in `AGENTS.md`, the root `README.md`,
-`CLAUDE.md` (coordination log), and this file.
+After any structural change, keep the docs in sync: reflect it in the root
+`README.md` and this file, and regenerate `docs/checklist.md` with `node build.js`.
 
 ## Gotchas — what `build.js` checks vs. what is on you
 
@@ -307,6 +305,6 @@ is: edit `data.js` → `node build.js` (validate, then regenerate). A JS syntax 
 - **Build:** `node build.js` (any recent Node; no `npm install`). It resolves paths
   via `__dirname`, so it runs from any working directory; the script lives at the
   repo root.
-- **Conventions:** documentation is **English only** (see `AGENTS.md`). Treat
+- **Conventions:** documentation is **English only**. Treat
   AI-synthesized control text as untrusted; verify high-stakes controls against the
   primary sources before relying on them.

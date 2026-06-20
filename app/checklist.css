@@ -356,6 +356,7 @@ input[type='text']:focus {
   background: var(--color-background-info);
   color: var(--color-text-info);
   border-color: transparent;
+  cursor: help;
 }
 .dt {
   padding: 0 11px 11px 11px;
