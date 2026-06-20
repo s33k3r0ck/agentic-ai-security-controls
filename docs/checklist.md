@@ -50,6 +50,8 @@ Start with `Core`, then add every profile that matches the system. A system ofte
 
 Core is the default baseline. It is not the same as the non-waivable floor. The non-waivable subset is listed in Section 7.
 
+Code-execution rows carry the row-level profile tag `Tool-Using (Code Exec)`. This is not a separate top-level profile: it is a sub-variant of **Tool-Using**, scoped to systems that can execute code, queries, shells, browser automation, or templates. Select it as part of the Tool-Using profile (the `+ CODE` case above); the reader folds it onto the `Tool-Using` filter.
+
 ## 3. Autonomy Model
 
 Use one autonomy model across intake, design, testing, and approvals.
@@ -420,15 +422,15 @@ Store one evidence package per release:
 
 Primary source context:
 
-- NotebookLM project: `Agentic AI Security`.
+- NotebookLM project: `AI security`.
 - NotebookLM source family: OWASP-style agentic AI risks and prompt injection taxonomy.
 
 NotebookLM source PDFs:
 
 - `Agentic AI Red Teaming Guide` (2025), CSA + OWASP.
 - `OWASP Top 10 for Agentic Applications` (2026).
-- `Prompt Injection Taxonomy` poster.
-- `Securing AI Agents`.
+- `Prompt Injection Taxonomy` poster (CrowdStrike).
+- `Securing AI Agents: Foundations, Frameworks, and Real-World Deployment`.
 - `Securing AI Systems: A Playbook for Security Leaders`.
 
 Public references checked on 2026-06-19:
@@ -523,7 +525,7 @@ Quick decode of the IDs, tags, and acronyms used throughout this document.
 
 ### Applicability profiles
 
-`Core` (every agentic system) plus any that match: `Tool-Using`, `RAG / Memory`, `Multi-Agent`, `Regulated`, `Cyber-Physical`. Additive: scope = Core + the union of matching profiles. See Section 2.
+`Core` (every agentic system) plus any that match: `Tool-Using`, `RAG / Memory`, `Multi-Agent`, `Regulated`, `Cyber-Physical`. Additive: scope = Core + the union of matching profiles. Code-execution rows are tagged `Tool-Using (Code Exec)`, a Tool-Using sub-variant (not a seventh top-level profile). See Section 2.
 
 ### Autonomy levels
 

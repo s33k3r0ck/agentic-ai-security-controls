@@ -1,8 +1,8 @@
-# Build & Review Evidence - Agentic SDLC Hardening Checklist
+# Build & Review Evidence - Agentic AI Security Controls
 
 *Date: 2026-06-19*
 
-This record backs the unified checklist's claim that it was "reconciled with an independent review." It documents the source material, the blind comparison method, the merge process, and post-merge corrections.
+This record documents how the checklist was built and reviewed: the source material, the blind comparison method, the merge process, the post-merge corrections, and the final simplification and coverage-reinstatement that produced the shipped **Canonical v1.0 (114 controls)**. (The draft filenames cited below are historical — they were the working names at the time, not current artifacts.)
 
 ## 1. Sources
 
@@ -12,8 +12,8 @@ Two source checklists were merged:
 - **Source-grounded controls catalog** — `agentic-sdlc-hardening-checklist-claude.md`. 146 controls grounded in the "AI security" NotebookLM notebook. Grounding sources:
   - CSA/OWASP Agentic AI Red Teaming Guide 2025
   - OWASP Top 10 for Agentic Applications 2026
-  - Prompt Injection Taxonomy
-  - Securing AI Agents
+  - Prompt Injection Taxonomy (CrowdStrike)
+  - Securing AI Agents: Foundations, Frameworks, and Real-World Deployment
   - Securing AI Systems: A Playbook for Security Leaders
 
 ## 2. Blind Comparison
@@ -41,7 +41,7 @@ The merge was executed by:
 - **1 frame author.**
 - **1 adversarial consistency/completeness verifier.**
 
-**Result.** 213 atomic controls across 19 families, plus a 15-row AGT risk crosswalk, with 6-column tables.
+**Result (unified v3.0).** 213 atomic controls across 19 families, plus a 15-row AGT risk crosswalk, with 6-column tables.
 
 ## 4. Post-Merge Fixes
 
@@ -60,7 +60,18 @@ The merge was executed by:
 - Fixed the **DEC** release-floor ID.
 - Tagged synthesized controls with "SDLC synthesis" provenance.
 
-## 6. Caveat
+**Result (unified v3.1).** 229 atomic controls — the high-water-mark synthesis, before simplification.
+
+## 6. Simplification and Canonical v1.0
+
+The 229-control unified v3.1 synthesis was deliberately too dense for day-to-day use, so it was simplified and then coverage-corrected into the shipped edition:
+
+- **Simplification (~101 controls).** A reviewed pass consolidated duplicates, made pass criteria technology-neutral, replaced ID-range gate references with family names, and dropped technique-level detail — producing a leaner ~101-control baseline.
+- **Coverage reinstatement (+13 → 114).** An independent blind coverage analysis found that the simplification had dropped 13 distinct controls entirely (not merged). These were reinstated in the reviewed format to close real gaps without re-bloating the catalog.
+
+**Result (Canonical v1.0).** 114 controls across 13 display families (21 ID-prefixes), 21 of them non-waivable release-floor controls, with a 167-edge dependency graph. The per-control reinstatement detail is in `docs/checklist.md` Appendix C.
+
+## 7. Caveat
 
 This review was performed by AI agents, not a human audit. Treat it as engineering due-diligence, not third-party certification.
 

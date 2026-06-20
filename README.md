@@ -4,6 +4,8 @@
 
 **Version 1.0.0** · 2026-06-20 · see [`CHANGELOG.md`](CHANGELOG.md)
 
+**Repository:** <https://github.com/s33k3r0ck/agentic-ai-security-controls> · [Releases](https://github.com/s33k3r0ck/agentic-ai-security-controls/releases)
+
 It is grounded in a NotebookLM research notebook plus public OWASP references, and was produced through a multi-agent review process (Claude + Codex). It is a baseline you can hand to engineering and security leadership.
 
 ---
@@ -11,9 +13,9 @@ It is grounded in a NotebookLM research notebook plus public OWASP references, a
 ## Quick start
 
 1. **Read it:** [`docs/checklist.md`](docs/checklist.md) — the canonical checklist, 114 controls.
-2. **Browse it interactively:** open [`app/checklist.html`](app/checklist.html) in any browser (keep `app/checklist.css` alongside it). It runs fully **offline** — no server, no internet, no CDN.
+2. **Browse it interactively:** open [`app/checklist.html`](app/checklist.html) in any browser (keep its companions — `app/checklist.css`, `app/data.js`, and `app/checklist.js` — alongside it). It runs fully **offline** — no server, no internet, no CDN.
 3. **Use it on a system:**
-   - Select the **applicability profiles** your system matches (`Core` is always in scope; profiles are additive).
+   - Select the **applicability profiles** your system matches (`Core` applies to every agentic system; profiles are additive).
    - Walk the **SDLC gates** (Gate 0 intake → Gate 9 decommissioning).
    - Mark each in-scope control `Pass` / `Fail` / `Partial` / `Not Applicable` / `Accepted Risk`, adding a note / evidence reference per control.
    - In the reader, **Save** your statuses and notes to a JSON file and **Load** them back next session (the file is the record; nothing is stored automatically).
@@ -28,7 +30,7 @@ It is grounded in a NotebookLM research notebook plus public OWASP references, a
 | --- | --- |
 | **`app/data.js`** | **The single source of truth.** Control data + the AGT risk model (`window.CHECKLIST.agt`). Edit here. |
 | **`docs/checklist.md`** | The checklist as a readable document (114 controls). Its control tables + dependency graph are generated from `app/data.js`. |
-| `app/checklist.html` | Interactive, offline reader (loads `data.js` + `checklist.js`; keep `checklist.css` beside it). |
+| `app/checklist.html` | Interactive, offline reader (loads `data.js`, `checklist.js`, and `checklist.css`; keep all three beside it). |
 | `app/checklist.js` | Reader logic. |
 | `app/checklist.css` | Reader styles. |
 | `app/README.md` | Developer guide for the app: data model, reader internals, build step, how to extend. |
@@ -44,7 +46,7 @@ It is grounded in a NotebookLM research notebook plus public OWASP references, a
 
 ## The canonical document at a glance
 
-- **114 controls** across **21 control families** (shown in 13 table sections).
+- **114 controls** across **13 control families** / **21 ID prefixes** (one table section per family).
 - A **15-row AGT risk model** crosswalked to OWASP taxonomies.
 - **21 non-waivable** release-floor controls.
 - **167 dependency edges** between controls (acyclic graph).
@@ -125,8 +127,8 @@ The reader loads `app/data.js` directly — **`app/data.js` is the source of tru
 
 - *Agentic AI Red Teaming Guide* (2025) — Cloud Security Alliance + OWASP
 - *OWASP Top 10 for Agentic Applications* (2026)
-- *Prompt Injection Taxonomy* (poster)
-- *Securing AI Agents*
+- *Prompt Injection Taxonomy* (poster by CrowdStrike)
+- *Securing AI Agents: Foundations, Frameworks, and Real-World Deployment*
 - *Securing AI Systems: A Playbook for Security Leaders*
 
 **Process.** Two agents produced independent checklists — a source-grounded controls catalog (Claude) and a governance/SDLC skeleton (Codex). A blind, multi-reviewer comparison found the skeleton stronger on structure and the catalog stronger on coverage, so they were merged into a unified document (229 controls), then simplified (Codex) into a usable ~101-control baseline. A coverage analysis found the simplification had dropped 13 distinct controls, which were reinstated to produce **Canonical v1.0 (114 controls)**. A dependency graph and legend were added last. Full detail and the blind-review verdict are in `docs/build-evidence.md`.
@@ -147,7 +149,7 @@ Released under [semantic versioning](https://semver.org), keyed to the **control
 - **MINOR** (`1.x.0`) — control wording, pass criteria, or evidence refined; new appendices; reader / tooling features. Existing control IDs stay stable.
 - **PATCH** (`1.0.x`) — editorial fixes, typos, non-semantic corrections.
 
-Current release: **1.0.0** — see [`CHANGELOG.md`](CHANGELOG.md). The checklist document edition is labelled *Canonical v1.0* (in `docs/checklist.md` and `app/data.js`).
+Current release: **1.0.0** — see [`CHANGELOG.md`](CHANGELOG.md). The checklist document edition is labelled *Canonical v1.0* (in `docs/checklist.md`).
 
 ---
 

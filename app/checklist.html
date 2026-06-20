@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Agentic SDLC Hardening Checklist — Canonical v1.0</title>
+    <title>Agentic AI Security Controls — Canonical v1.0</title>
     <link rel="stylesheet" href="checklist.css" />
   </head>
   <body>
@@ -11,7 +11,8 @@
       <h1>Secure SDLC &amp; Hardening Checklist for Agentic Systems</h1>
       <p class="sub">Canonical v1.0 · 114 controls · interactive reader</p>
       <p class="legend">
-        Pick the profiles your system matches (Core is always in scope; profiles are additive).
+        Pick the profiles your system matches to filter the list (Core applies to every system;
+        profiles are additive).
         Click a control to see pass criteria, evidence, AGT risk, and dependency links. The
         <span class="dng">floor</span> badge marks non-waivable, launch-blocking controls. Click the
         status pill to mark Pass / Fail / Partial / N/A. Toggle <b>Step order</b> to list controls
@@ -136,8 +137,9 @@
       <div id="cll"></div>
       <p class="foot">
         Loads <code>data.js</code> directly — <code>app/data.js</code> is the source of truth for
-        control data and the AGT risk model. <code>docs/checklist.md</code> is a readable, generated
-        view of the same data (prose, gates, legend in Appendix D, dependency graph in Appendix E).
+        control data and the AGT risk model. <code>docs/checklist.md</code> is a readable companion document; its
+        control tables, AGT risk tables (Section 4, Appendix D), and dependency graph (Appendix E)
+        are generated from this same data, while its prose and gates are hand-maintained.
         Your assessment (the statuses and notes you fill in) is separate from the control
         definitions: it is saved to and loaded from a JSON file you control via <b>Save file</b> /
         <b>Load file</b>. AI-synthesized content; verify high-stakes controls against primary

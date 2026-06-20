@@ -8,7 +8,23 @@ to the control set (see "Versioning" in the [README](README.md)).
 
 ## [Unreleased]
 
-_Nothing yet._
+### Fixed
+
+- Documentation consistency pass (no control changes): aligned the reader window title
+  and Excel export metadata to the **Agentic AI Security Controls** brand; reconciled the
+  `docs/build-evidence.md` provenance counts (213 → 229 → ~101 → 114) with the README
+  narrative it is cited from; corrected the source-notebook name, the `app/data.js`
+  edition-label claim, and the reader's companion-file list in the README quick start;
+  documented the `Tool-Using (Code Exec)` profile sub-variant in the canonical checklist;
+  uncommented the changelog version links with the real repository owner; and added the
+  repository URL to the README.
+- Reader: a loaded `Accepted Risk` on a Release-Floor control is now dropped (its note kept,
+  reported separately) so the reader honors the non-waivable-floor rule; **Clear** now resets
+  the status/notes maps as null-prototype objects, matching the documented invariant.
+- Docs: corrected "21 control families" to "13 families / 21 ID prefixes" (README, CHANGELOG),
+  the reader footer's description of which `docs/checklist.md` regions are generated, a stale
+  `DATA-07` example in `app/README.md`, and the "Core is always in scope" wording versus the
+  reader's view-filter chips.
 
 ## [1.0.0] - 2026-06-20
 
@@ -16,7 +32,7 @@ Initial public release — the _Canonical v1.0_ checklist edition.
 
 ### Added
 
-- **114 security controls** for agentic AI systems across **21 control families**,
+- **114 security controls** for agentic AI systems across **13 control families** (21 ID prefixes),
   organized by **10 SDLC gates** (use-case intake → decommissioning).
 - **21 non-waivable Release Floor** controls that must pass before production launch
   (cannot be marked `Accepted Risk`).
@@ -46,7 +62,5 @@ Initial public release — the _Canonical v1.0_ checklist edition.
 - `docs/build-evidence.md` — provenance of how the checklist was built and reviewed
   (multi-agent synthesis, blind review, coverage analysis).
 
-<!-- After creating the GitHub repo, set OWNER and uncomment:
-[Unreleased]: https://github.com/OWNER/agentic-ai-security-controls/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/OWNER/agentic-ai-security-controls/releases/tag/v1.0.0
--->
+[Unreleased]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/s33k3r0ck/agentic-ai-security-controls/releases/tag/v1.0.0

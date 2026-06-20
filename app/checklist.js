@@ -617,12 +617,12 @@ var IC = {
       },
       {
         name: 'docProps/app.xml',
-        data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Secure SDLC Checklist</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop><HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant><vt:variant><vt:i4>1</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size="1" baseType="lpstr"><vt:lpstr>Checklist</vt:lpstr></vt:vector></TitlesOfParts><Company></Company><LinksUpToDate>false</LinksUpToDate><SharedDoc>false</SharedDoc><HyperlinksChanged>false</HyperlinksChanged><AppVersion>16.0300</AppVersion></Properties>',
+        data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Agentic AI Security Controls</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop><HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant><vt:variant><vt:i4>1</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size="1" baseType="lpstr"><vt:lpstr>Checklist</vt:lpstr></vt:vector></TitlesOfParts><Company></Company><LinksUpToDate>false</LinksUpToDate><SharedDoc>false</SharedDoc><HyperlinksChanged>false</HyperlinksChanged><AppVersion>16.0300</AppVersion></Properties>',
       },
       {
         name: 'docProps/core.xml',
         data:
-          '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Agentic SDLC Hardening Checklist Export</dc:title><dc:creator>Secure SDLC Checklist</dc:creator><cp:lastModifiedBy>Secure SDLC Checklist</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">' +
+          '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Agentic AI Security Controls Export</dc:title><dc:creator>Agentic AI Security Controls</dc:creator><cp:lastModifiedBy>Agentic AI Security Controls</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">' +
           xmlText(created) +
           '</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">' +
           xmlText(created) +
@@ -914,6 +914,7 @@ var IC = {
           nn = Object.create(null),
           matched = 0,
           orphan = 0,
+          floorAr = 0,
           bad = 0;
         Object.keys(entries).forEach(function (k) {
           var e = entries[k];
@@ -928,6 +929,10 @@ var IC = {
               s = '';
             }
           } // accept the documented vocabulary; drop the rest
+          if (s === 'Accepted Risk' && byId[k] && byId[k].floor) {
+            floorAr++;
+            s = ''; // hard-floor rule: floor controls cannot be Accepted Risk (note kept)
+          }
           var nt = e.note == null ? '' : String(e.note);
           if (s) ns[k] = s;
           if (nt) nn[k] = nt;
@@ -946,6 +951,7 @@ var IC = {
             ' control' +
             (matched === 1 ? '' : 's') +
             (orphan ? ' · ' + orphan + ' for unknown IDs (kept)' : '') +
+            (floorAr ? ' · ' + floorAr + ' Accepted Risk on floor (dropped)' : '') +
             (bad ? ' · ' + bad + ' invalid status ignored' : '') +
             '.'
         );
@@ -966,8 +972,8 @@ var IC = {
         )
       )
         return;
-      status = {};
-      notes = {};
+      status = Object.create(null);
+      notes = Object.create(null);
       dirty = true;
       render();
       flash('Cleared all statuses and notes.');

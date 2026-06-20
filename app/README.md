@@ -1,8 +1,8 @@
 # `app/` — the interactive checklist reader (developer guide)
 
-A self-contained, **offline** reader for the Agentic SDLC Hardening Checklist. No
-build step, no server, no network: open `checklist.html` in any browser and it
-runs. This document is for people **editing the app or the data**. For the
+A self-contained, **offline** reader for **Agentic AI Security Controls** (the
+canonical *Secure SDLC and Hardening Checklist for Agentic Systems*). No build
+step, no server, no network: open `checklist.html` in any browser and it runs. This document is for people **editing the app or the data**. For the
 end-user feature tour and the project overview, see the root [`README.md`](../README.md).
 
 ## Files and roles
@@ -52,7 +52,7 @@ hand-edit the generated regions; edit `data.js` and run `node build.js`.
 
 | Field | Type | Meaning / allowed values |
 | --- | --- | --- |
-| `id` | string | Unique control ID, `PREFIX-NN`, e.g. `GOV-01`, `DATA-07`. The prefix is one of the 21 ID-prefixes (GOV, ARCH, COMP, TOOL, ID, PROMPT, DATA, RAG, MEM, OUT, CODE, A2A, HITL, RES, CPS, OPS, SUP, TEST, CHG, IR, DEC). |
+| `id` | string | Unique control ID, `PREFIX-NN`, e.g. `GOV-01`, `DATA-05`. The prefix is one of the 21 ID-prefixes (GOV, ARCH, COMP, TOOL, ID, PROMPT, DATA, RAG, MEM, OUT, CODE, A2A, HITL, RES, CPS, OPS, SUP, TEST, CHG, IR, DEC). |
 | `family` | string | One of the **13** display family names (below). Several ID-prefixes can map to one family. This is the grouping used by the reader's family view and by the Section 8 tables. |
 | `profile` | string | Applicability profile. One of 7 values: `Core`, `Tool-Using`, `Tool-Using (Code Exec)`, `RAG / Memory`, `Multi-Agent`, `Regulated`, `Cyber-Physical`. |
 | `control` | string | Short imperative statement of the control ("Assign owners."). |
@@ -74,9 +74,9 @@ The **13 `family` values** (with control counts at time of writing):
 `Supply Chain, Testing, Change, and Decommissioning`.
 
 > Note the `family` vs ID-prefix distinction: e.g. `DATA-*`, `RAG-*`, and `MEM-*`
-> IDs all live in the single `"Data, RAG, and Memory"` family. The root README's
-> "21 control families shown in 13 table sections" refers to these 21 prefixes /
-> 13 families.
+> IDs all live in the single `"Data, RAG, and Memory"` family. The root README and
+> CHANGELOG phrase this as "13 control families / 21 ID prefixes": the 13 families are
+> the table sections (one per family); the 21 are the ID prefixes that map onto them.
 
 ### The AGT risk model (`window.CHECKLIST.agt`)
 
@@ -146,7 +146,10 @@ JSON file and **Load** it back:
   `Partial` · `N/A` (with `Not Applicable` normalized to `N/A`) · `Accepted Risk` (via
   the `LOADST` map) — and preserves/re-emits `Accepted Risk`, rendering it as a
   non-clickable info-colored pill (`.st.ar`). Only statuses outside that set are dropped
-  (counted as "invalid status ignored"). The pill label is `esc()`-escaped.
+  (counted as "invalid status ignored"). A loaded `Accepted Risk` on a **Release-Floor**
+  control (`floor: true`) is also dropped — its note kept, reported as "Accepted Risk on
+  floor (dropped)" — because the hard-floor rule forbids waiving floor controls. The pill
+  label is `esc()`-escaped.
 - `notes{}` — per-control free-text note / evidence reference, edited in a
   `<textarea>` in the expanded row. The `input` handler updates `notes{}` **without
   re-rendering** (so the textarea keeps focus and caret while you type) and only
@@ -175,7 +178,7 @@ The assessment JSON is **separate from `data.js`** — `data.js` is the control
   "count": 2,
   "entries": {
     "GOV-01": { "status": "Pass", "note": "owner: sec; see runbook" },
-    "DATA-07": { "status": "Partial", "note": "ticket #42" }
+    "DATA-05": { "status": "Partial", "note": "ticket #42" }
   }
 }
 ```
