@@ -15,9 +15,9 @@ to the control set (see "Versioning" in the [README](README.md)).
   OWASP Agentic (`T1`–`T17`) and OWASP LLM (`LLM01`–`LLM10`) are derived from each control's
   AGT risks; **MITRE ATLAS** techniques (`AML.Txxxx`, catalog v5.4.0) are grounded per control
   where applicable (81 of 114 controls); per-control **source references** are derived from
-  the Appendix B family guide; and **NIST AI RMF**, **ISO/IEC 42001**, and **CSA AICM** are
-  empty **scaffold** columns to fill against each standard (indicative crosswalks, not
-  authoritative mappings). Backed by new `app/data.js` keys (`frameworks`, `sources`,
+  the Appendix B family guide. (NIST AI RMF / ISO 42001 / CSA AICM and AIVSS are deliberately
+  not carried as empty placeholders — an accurate standard mapping is a separate, deliberate
+  effort.) Backed by new `app/data.js` keys (`frameworks`, `sources`,
   `familySources`, `mappings`) validated by `build.js`; OWASP and source refs are derived,
   not stored.
 

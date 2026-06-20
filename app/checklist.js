@@ -255,7 +255,7 @@ var IC = {
   var SRC = (window.CHECKLIST && window.CHECKLIST.sources) || {};
   // Per-control external-framework crosswalk. OWASP Agentic/LLM are DERIVED from the
   // control's AGT risks; sources are DERIVED from the family guide; ATLAS is stored in
-  // MAPS (grounded); NIST/ISO/AICM are scaffold (empty), shown as a reminder line.
+  // MAPS (grounded). NIST/ISO/AICM are intentionally not carried (see data.js).
   function deriveOwasp(risk) {
     var r = (risk || '').trim();
     if (r === 'All' || /^AGT-\d{2} through AGT-\d{2}$/.test(r))
@@ -356,8 +356,7 @@ var IC = {
         (_at.length ? esc(_at.join(', ')) : '—') +
         '</span><span class="fwl"><i>Sources</i> ' +
         (_sr.length ? _sr.map(esc).join(' &middot; ') : '—') +
-        '</span><span class="fws">NIST AI RMF &middot; ISO/IEC 42001 &middot; CSA AICM: scaffold — fill against the standard</span>' +
-        '</div>';
+        '</span></div>';
       d +=
         '<div class="ne"><label for="note-' +
         esc(c.id) +

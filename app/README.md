@@ -106,15 +106,14 @@ expanded row):
 
 - **`frameworks`** — metadata for each framework, each with a `status`: `derived` (OWASP
   Agentic / OWASP LLM, computed from the control's AGT risks; source refs, from
-  `familySources`), `grounded` (MITRE ATLAS, stored in `mappings`, checked against the
-  ATLAS catalog), or `scaffold` (NIST AI RMF, ISO/IEC 42001, CSA AICM — intentionally
-  empty, to be filled per-control against the standard; **not authoritative mappings**).
+  `familySources`) or `grounded` (MITRE ATLAS, stored in `mappings`, checked against the
+  ATLAS catalog). NIST AI RMF / ISO 42001 / CSA AICM and AIVSS are intentionally not
+  carried (empty compliance placeholders add no value; see the note in `data.js`).
 - **`sources`** — the five NotebookLM source PDFs keyed by short id.
 - **`familySources`** — ID-prefix → source ids (the grounded Appendix B family guide);
   per-control source refs derive from this via the control's prefix.
-- **`mappings`** — sparse map of control id → `{ atlas: [AML.Txxxx, …] }` (plus optional
-  scaffold arrays `nistAiRmf` / `iso42001` / `csaAicm`). Only controls with at least one
-  grounded mapping appear; ATLAS ids are format-validated (`AML.TXXXX[.XXX]`).
+- **`mappings`** — sparse map of control id → `{ atlas: [AML.Txxxx, …] }`. Only controls
+  with at least one mapping appear; ATLAS ids are format-validated (`AML.TXXXX[.XXX]`).
 
 `build.js` validates these (unknown control ids, unknown framework keys, bad ATLAS id
 format, dangling source refs, missing ID-prefix entries) and regenerates the Appendix F
@@ -150,8 +149,8 @@ The script is one IIFE. Key mechanics:
 - **External-framework crosswalk** — the expanded row renders a **Frameworks** block:
   OWASP Agentic / OWASP LLM (`deriveOwasp()` from the control's AGT risks), MITRE ATLAS
   (`atlasOf()` from `window.CHECKLIST.mappings`), and source refs (`srcRefs()` from
-  `familySources`), plus a scaffold reminder for NIST / ISO / AICM. The Excel export adds
-  the same as four trailing columns (after `Affects`, so the status column stays `B`).
+  `familySources`). The Excel export adds the same as four trailing columns (after
+  `Affects`, so the status column stays `B`).
 - **Excel export** — the **Export Excel** button downloads the current filtered view
   as a self-contained `.xlsx` workbook. The generator lives in `checklist.js` and
   writes the OpenXML worksheet, styles, metadata, and ZIP container in-browser, so it
@@ -253,8 +252,8 @@ without writing), then regenerates **only** the marked regions of `docs/checklis
    tables, regenerated from `window.CHECKLIST.agt`. Spliced inside the
    `GENERATED:riskmodel` and `GENERATED:riskref` markers.
 4. **Appendix F framework crosswalk** — the per-control external-framework table (OWASP
-   derived from AGT risks, MITRE ATLAS from `window.CHECKLIST.mappings`, NIST/ISO/AICM
-   scaffold). Spliced inside the `GENERATED:crosswalk` markers.
+   derived from AGT risks, MITRE ATLAS from `window.CHECKLIST.mappings`). Spliced inside
+   the `GENERATED:crosswalk` markers.
 
 The controls and dependency-graph regions are located by heading anchors in
 `docs/checklist.md` (the Section 8 note sentence, `## 9. Waivers and Severity`,

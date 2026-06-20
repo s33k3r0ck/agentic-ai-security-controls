@@ -51,7 +51,7 @@ It is grounded in a NotebookLM research notebook plus public OWASP references, a
 - **21 non-waivable** release-floor controls.
 - **167 dependency edges** between controls (acyclic graph).
 - **6 applicability profiles**, an **A0–A3 autonomy model**, and **10 SDLC gates** (0–9).
-- A per-control **framework crosswalk** (Appendix F): OWASP Agentic / LLM (derived), MITRE ATLAS (grounded), and NIST AI RMF / ISO 42001 / CSA AICM scaffolds to fill.
+- A per-control **framework crosswalk** (Appendix F): OWASP Agentic / LLM (derived) and MITRE ATLAS (grounded).
 - Appendices A–F (source pointers, family source guide, simplification notes, legend, dependency graph, external-framework crosswalk).
 
 ---
@@ -90,7 +90,7 @@ The 21 controls that **must** be cleared before production launch. They **cannot
 Classify each agent once and reuse it across intake, design, testing, and approvals: **A0** advisory · **A1** assisted action · **A2** supervised delegation · **A3** autonomous operation. High-impact, irreversible, regulated, or safety-relevant actions should not be A3 without explicit risk acceptance and strong compensating controls.
 
 ### Risk model and OWASP mapping
-Controls map to **`AGT-01`–`AGT-15`**, local risk-family IDs for this document. These are crosswalked (Section 4) to the official **OWASP Agentic** taxonomy (`T1`–`T17`) and the **OWASP LLM Top 10 2025** (`LLM01`–`LLM10`). The `ASI01`–`ASI10` naming used by one source is a community ranking, **not** a canonical OWASP identifier — it is reconciled through the crosswalk. **Appendix F** carries the per-control crosswalk to OWASP Agentic / LLM and MITRE ATLAS, plus empty scaffolds for NIST AI RMF, ISO/IEC 42001, and CSA AICM (to fill against the standard — not authoritative mappings).
+Controls map to **`AGT-01`–`AGT-15`**, local risk-family IDs for this document. These are crosswalked (Section 4) to the official **OWASP Agentic** taxonomy (`T1`–`T17`) and the **OWASP LLM Top 10 2025** (`LLM01`–`LLM10`). The `ASI01`–`ASI10` naming used by one source is a community ranking, **not** a canonical OWASP identifier — it is reconciled through the crosswalk. **Appendix F** carries the per-control crosswalk to OWASP Agentic / LLM and MITRE ATLAS. (NIST AI RMF, ISO/IEC 42001, CSA AICM, and AIVSS are deliberately not carried as empty placeholders — an accurate standard mapping is a separate effort.)
 
 ### Dependency graph (depends-on / affects)
 Each control records:

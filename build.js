@@ -151,7 +151,7 @@ function validate(C, agt, extra) {
   // External-framework mappings + source refs (optional; validated when build() passes them).
   if (extra) {
     const ATLAS_RE = /^AML\.T\d{4}(\.\d{3})?$/;
-    const FW_KEYS = ['atlas', 'nistAiRmf', 'iso42001', 'csaAicm'];
+    const FW_KEYS = ['atlas'];
     const ctlIds = new Set(C.map((c) => c && c.id));
     const maps = extra.mappings || {};
     Object.keys(maps).forEach((id) => {
@@ -313,7 +313,7 @@ function build() {
     riskref += '| ' + k + ' | ' + agt[k].name + ' |\n';
   });
 
-  // --- Appendix F framework crosswalk (per-control; OWASP derived, ATLAS grounded, rest scaffold) ---
+  // --- Appendix F framework crosswalk (per-control; OWASP derived, MITRE ATLAS grounded) ---
   function deriveOwasp(risk) {
     const r = (risk || '').trim();
     if (r === 'All' || /^AGT-\d{2} through AGT-\d{2}$/.test(r))
@@ -336,26 +336,11 @@ function build() {
   }
   const cell = (a) => (Array.isArray(a) && a.length ? a.join(', ') : '—');
   let crosswalk =
-    '| ID | OWASP Agentic | OWASP LLM | MITRE ATLAS | NIST AI RMF | ISO 42001 | CSA AICM |\n| --- | --- | --- | --- | --- | --- | --- |\n';
+    '| ID | OWASP Agentic | OWASP LLM | MITRE ATLAS |\n| --- | --- | --- | --- |\n';
   C.forEach((c) => {
     const ow = deriveOwasp(c.risk);
     const m = maps[c.id] || {};
-    crosswalk +=
-      '| ' +
-      c.id +
-      ' | ' +
-      ow.agentic +
-      ' | ' +
-      ow.llm +
-      ' | ' +
-      cell(m.atlas) +
-      ' | ' +
-      cell(m.nistAiRmf) +
-      ' | ' +
-      cell(m.iso42001) +
-      ' | ' +
-      cell(m.csaAicm) +
-      ' |\n';
+    crosswalk += '| ' + c.id + ' | ' + ow.agentic + ' | ' + ow.llm + ' | ' + cell(m.atlas) + ' |\n';
   });
 
   // --- Splice into docs/checklist.md between region boundaries ---

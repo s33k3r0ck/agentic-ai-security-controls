@@ -1577,20 +1577,14 @@ window.CHECKLIST.agt = {
 //              sourceRefs come from familySources (below).
 //   grounded — stored per-control in window.CHECKLIST.mappings, checked against a
 //              primary catalog (MITRE ATLAS v5.4.0).
-//   scaffold — intentionally EMPTY, to be filled per-control against the standard's
-//              own text. NOT an authoritative/certified mapping; do not treat a
-//              scaffold cell as a compliance attestation.
+// NIST AI RMF / ISO 42001 / CSA AICM and AIVSS are intentionally NOT included: empty
+// compliance scaffolds add no value, and an accurate mapping is a separate, deliberate
+// effort against each standard's own text. (AIVSS scores vulnerabilities, not controls.)
 window.CHECKLIST.frameworks = [
   { "key": "owaspAgentic", "label": "OWASP Agentic", "status": "derived", "url": "https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/", "note": "OWASP Agentic Security Initiative T1-T17, derived from the control's AGT risks (Section 4)." },
   { "key": "owaspLlm", "label": "OWASP LLM Top 10", "status": "derived", "url": "https://genai.owasp.org/llm-top-10/", "note": "OWASP LLM Top 10 2025 LLM01-LLM10, derived from the control's AGT risks." },
-  { "key": "mitreAtlas", "label": "MITRE ATLAS", "status": "grounded", "url": "https://atlas.mitre.org/", "note": "Adversarial techniques (AML.Txxxx) the control mitigates/detects. Catalog v5.4.0 (Feb 2026); populated where applicable." },
-  { "key": "nistAiRmf", "label": "NIST AI RMF", "status": "scaffold", "url": "https://www.nist.gov/itl/ai-risk-management-framework", "note": "Fill from NIST AI 100-1 (GOVERN/MAP/MEASURE/MANAGE subcategories). Indicative crosswalk only - verify against the standard." },
-  { "key": "iso42001", "label": "ISO/IEC 42001", "status": "scaffold", "url": "https://www.iso.org/standard/42001", "note": "Fill from ISO/IEC 42001 Annex A controls. Indicative crosswalk only - verify against the standard." },
-  { "key": "csaAicm", "label": "CSA AICM", "status": "scaffold", "url": "https://cloudsecurityalliance.org/research/working-groups/ai-controls-matrix", "note": "Fill from the CSA AI Controls Matrix. Indicative crosswalk only - verify against the standard." }
+  { "key": "mitreAtlas", "label": "MITRE ATLAS", "status": "grounded", "url": "https://atlas.mitre.org/", "note": "Adversarial techniques (AML.Txxxx) the control mitigates/detects. Catalog v5.4.0 (Feb 2026); populated where applicable." }
 ];
-// AIVSS note: the AI Vulnerability Scoring System scores agentic VULNERABILITIES
-// (a per-finding severity score), not controls, so it is applied at the AGT-risk /
-// red-team-finding level rather than as a per-control column here.
 
 // Primary-source citations (the five NotebookLM source PDFs) keyed by short id.
 window.CHECKLIST.sources = {
@@ -1627,11 +1621,9 @@ window.CHECKLIST.familySources = {
   "TEST": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"]
 };
 // Per-control external-framework mappings. Keyed by control id. Sparse: only controls
-// with at least one grounded mapping appear. Each entry may carry: atlas (MITRE ATLAS
-// AML.Txxxx ids), and the scaffold arrays nistAiRmf / iso42001 / csaAicm (fill per the
-// standard). owaspAgentic / owaspLlm / sourceRefs are DERIVED, not stored here.
-// The `atlas` values below are grounded against MITRE ATLAS v5.4.0; scaffold arrays are
-// omitted (empty) for a human to fill against each standard's own text.
+// with at least one mapping appear. Each entry carries `atlas` — MITRE ATLAS AML.Txxxx
+// ids, grounded against catalog v5.4.0. owaspAgentic / owaspLlm / sourceRefs are
+// DERIVED, not stored here.
 window.CHECKLIST.mappings = {
   "GOV-07": { "atlas": ["AML.T0010.001"] },
   "ARCH-02": { "atlas": ["AML.T0051.001", "AML.T0070"] },

@@ -407,12 +407,6 @@ input[type='text']:focus {
   color: var(--color-text-tertiary);
   margin-right: 4px;
 }
-.fws {
-  flex-basis: 100%;
-  font-size: 11px;
-  font-style: italic;
-  color: var(--color-text-tertiary);
-}
 .mut {
   color: var(--color-text-tertiary);
   font-size: 13px;
