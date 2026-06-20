@@ -1576,14 +1576,14 @@ window.CHECKLIST.agt = {
 //              owaspLlm come from each control's AGT risks (window.CHECKLIST.agt);
 //              sourceRefs come from familySources (below).
 //   grounded — stored per-control in window.CHECKLIST.mappings, checked against a
-//              primary catalog (MITRE ATLAS v5.4.0).
+//              primary catalog (MITRE ATLAS v2026.05).
 // NIST AI RMF / ISO 42001 / CSA AICM and AIVSS are intentionally NOT included: empty
 // compliance scaffolds add no value, and an accurate mapping is a separate, deliberate
 // effort against each standard's own text. (AIVSS scores vulnerabilities, not controls.)
 window.CHECKLIST.frameworks = [
   { "key": "owaspAgentic", "label": "OWASP Agentic", "status": "derived", "url": "https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/", "note": "OWASP Agentic Security Initiative T1-T17, derived from the control's AGT risks (Section 4)." },
   { "key": "owaspLlm", "label": "OWASP LLM Top 10", "status": "derived", "url": "https://genai.owasp.org/llm-top-10/", "note": "OWASP LLM Top 10 2025 LLM01-LLM10, derived from the control's AGT risks." },
-  { "key": "mitreAtlas", "label": "MITRE ATLAS", "status": "grounded", "url": "https://atlas.mitre.org/", "note": "Adversarial techniques (AML.Txxxx) the control mitigates/detects. Catalog v5.4.0 (Feb 2026); populated where applicable." }
+  { "key": "mitreAtlas", "label": "MITRE ATLAS", "status": "grounded", "url": "https://atlas.mitre.org/", "note": "Adversarial techniques (AML.Txxxx) the control mitigates/detects. Catalog v2026.05 (May 2026); populated where applicable." }
 ];
 
 // Primary-source citations (the five NotebookLM source PDFs) keyed by short id.
@@ -1622,51 +1622,51 @@ window.CHECKLIST.familySources = {
 };
 // Per-control external-framework mappings. Keyed by control id. Sparse: only controls
 // with at least one mapping appear. Each entry carries `atlas` — MITRE ATLAS AML.Txxxx
-// ids, grounded against catalog v5.4.0. owaspAgentic / owaspLlm / sourceRefs are
+// ids, grounded against catalog v2026.05. owaspAgentic / owaspLlm / sourceRefs are
 // DERIVED, not stored here.
 window.CHECKLIST.mappings = {
-  "GOV-07": { "atlas": ["AML.T0010.001"] },
-  "ARCH-02": { "atlas": ["AML.T0051.001", "AML.T0070"] },
+  "GOV-07": { "atlas": ["AML.T0010.001", "AML.T0010.005"] },
+  "ARCH-02": { "atlas": ["AML.T0051.001", "AML.T0070", "AML.T0080"] },
   "ARCH-03": { "atlas": ["AML.T0051", "AML.T0051.001"] },
-  "ARCH-04": { "atlas": ["AML.T0053", "AML.T0050"] },
-  "ARCH-05": { "atlas": ["AML.T0025", "AML.T0057"] },
-  "TOOL-02": { "atlas": ["AML.T0053", "AML.T0025"] },
-  "TOOL-03": { "atlas": ["AML.T0053"] },
-  "TOOL-04": { "atlas": ["AML.T0053", "AML.T0050"] },
-  "TOOL-05": { "atlas": ["AML.T0053", "AML.T0025"] },
-  "TOOL-06": { "atlas": ["AML.T0053", "AML.T0060"] },
-  "TOOL-08": { "atlas": ["AML.T0055"] },
+  "ARCH-04": { "atlas": ["AML.T0053", "AML.T0050", "AML.T0105"] },
+  "ARCH-05": { "atlas": ["AML.T0086", "AML.T0077", "AML.T0057"] },
+  "TOOL-02": { "atlas": ["AML.T0053", "AML.T0086"] },
+  "TOOL-03": { "atlas": ["AML.T0053", "AML.T0086"] },
+  "TOOL-04": { "atlas": ["AML.T0053", "AML.T0050", "AML.T0086", "AML.T0101"] },
+  "TOOL-05": { "atlas": ["AML.T0053", "AML.T0086"] },
+  "TOOL-06": { "atlas": ["AML.T0053", "AML.T0060", "AML.T0104"] },
+  "TOOL-08": { "atlas": ["AML.T0055", "AML.T0083"] },
   "ID-01": { "atlas": ["AML.T0012", "AML.T0055"] },
-  "ID-02": { "atlas": ["AML.T0012", "AML.T0053"] },
-  "ID-03": { "atlas": ["AML.T0012"] },
+  "ID-02": { "atlas": ["AML.T0053"] },
+  "ID-03": { "atlas": ["AML.T0053", "AML.T0085"] },
   "ID-04": { "atlas": ["AML.T0012"] },
   "ID-05": { "atlas": ["AML.T0053"] },
   "ID-06": { "atlas": ["AML.T0012"] },
   "PROMPT-01": { "atlas": ["AML.T0051"] },
   "PROMPT-02": { "atlas": ["AML.T0051.000", "AML.T0054", "AML.T0056"] },
-  "PROMPT-03": { "atlas": ["AML.T0051.001", "AML.T0070"] },
+  "PROMPT-03": { "atlas": ["AML.T0051.001", "AML.T0070", "AML.T0080"] },
   "PROMPT-04": { "atlas": ["AML.T0068"] },
   "PROMPT-05": { "atlas": ["AML.T0056", "AML.T0051.001"] },
-  "PROMPT-06": { "atlas": ["AML.T0051"] },
+  "PROMPT-06": { "atlas": ["AML.T0051", "AML.T0053"] },
   "PROMPT-07": { "atlas": ["AML.T0051.001", "AML.T0068"] },
-  "DATA-02": { "atlas": ["AML.T0057", "AML.T0025", "AML.T0024"] },
-  "DATA-03": { "atlas": ["AML.T0057", "AML.T0024"] },
-  "DATA-04": { "atlas": ["AML.T0025"] },
-  "DATA-05": { "atlas": ["AML.T0020"] },
-  "RAG-01": { "atlas": ["AML.T0070", "AML.T0019"] },
-  "RAG-02": { "atlas": ["AML.T0070"] },
+  "DATA-02": { "atlas": ["AML.T0057", "AML.T0086", "AML.T0025"] },
+  "DATA-03": { "atlas": ["AML.T0057", "AML.T0086"] },
+  "DATA-04": { "atlas": ["AML.T0085", "AML.T0025"] },
+  "DATA-05": { "atlas": ["AML.T0024"] },
+  "RAG-01": { "atlas": ["AML.T0070", "AML.T0071"] },
+  "RAG-02": { "atlas": ["AML.T0070", "AML.T0071"] },
   "RAG-03": { "atlas": ["AML.T0051.001", "AML.T0070"] },
   "RAG-04": { "atlas": ["AML.T0070", "AML.T0051.001"] },
-  "RAG-05": { "atlas": ["AML.T0070", "AML.T0036"] },
-  "RAG-06": { "atlas": ["AML.T0070", "AML.T0019"] },
-  "MEM-01": { "atlas": ["AML.T0051.001", "AML.T0070"] },
-  "MEM-02": { "atlas": ["AML.T0036"] },
-  "MEM-03": { "atlas": ["AML.T0070"] },
-  "MEM-04": { "atlas": ["AML.T0061", "AML.T0070"] },
-  "MEM-05": { "atlas": ["AML.T0070"] },
-  "MEM-06": { "atlas": ["AML.T0070"] },
-  "OUT-02": { "atlas": ["AML.T0067"] },
-  "OUT-03": { "atlas": ["AML.T0067"] },
+  "RAG-05": { "atlas": ["AML.T0085.000"] },
+  "RAG-06": { "atlas": ["AML.T0070", "AML.T0071"] },
+  "MEM-01": { "atlas": ["AML.T0080.000", "AML.T0051.001"] },
+  "MEM-02": { "atlas": ["AML.T0080.000"] },
+  "MEM-03": { "atlas": ["AML.T0080.000"] },
+  "MEM-04": { "atlas": ["AML.T0080.000", "AML.T0061"] },
+  "MEM-05": { "atlas": ["AML.T0080.000"] },
+  "MEM-06": { "atlas": ["AML.T0080.000"] },
+  "OUT-02": { "atlas": ["AML.T0077"] },
+  "OUT-03": { "atlas": ["AML.T0077"] },
   "OUT-05": { "atlas": ["AML.T0057"] },
   "OUT-06": { "atlas": ["AML.T0067", "AML.T0054"] },
   "CODE-01": { "atlas": ["AML.T0050", "AML.T0053"] },
@@ -1689,21 +1689,62 @@ window.CHECKLIST.mappings = {
   "CPS-03": { "atlas": ["AML.T0048", "AML.T0053"] },
   "CPS-04": { "atlas": ["AML.T0048"] },
   "CPS-05": { "atlas": ["AML.T0048"] },
-  "OPS-03": { "atlas": ["AML.T0053", "AML.T0054"] },
-  "OPS-04": { "atlas": ["AML.T0025", "AML.T0057", "AML.T0053"] },
-  "SUP-01": { "atlas": ["AML.T0010"] },
-  "SUP-02": { "atlas": ["AML.T0010", "AML.T0058", "AML.T0011.001"] },
-  "SUP-04": { "atlas": ["AML.T0010", "AML.T0011.001"] },
+  "OPS-03": { "atlas": ["AML.T0053", "AML.T0054", "AML.T0080"] },
+  "OPS-04": { "atlas": ["AML.T0086", "AML.T0085", "AML.T0053"] },
+  "SUP-01": { "atlas": ["AML.T0010", "AML.T0010.005"] },
+  "SUP-02": { "atlas": ["AML.T0010", "AML.T0058", "AML.T0011.001", "AML.T0104", "AML.T0109"] },
+  "SUP-04": { "atlas": ["AML.T0010", "AML.T0011.001", "AML.T0109"] },
   "SUP-05": { "atlas": ["AML.T0010.001", "AML.T0011.001", "AML.T0055"] },
-  "TEST-02": { "atlas": ["AML.T0051.000", "AML.T0051.001", "AML.T0054", "AML.T0068"] },
-  "TEST-03": { "atlas": ["AML.T0042"] },
-  "TEST-04": { "atlas": ["AML.T0042"] },
-  "TEST-05": { "atlas": ["AML.T0051", "AML.T0054", "AML.T0042"] },
+  "TEST-02": { "atlas": ["AML.T0051.000", "AML.T0051.001", "AML.T0054", "AML.T0068", "AML.T0070", "AML.T0080"] },
+  "TEST-05": { "atlas": ["AML.T0051", "AML.T0054"] },
   "CHG-03": { "atlas": ["AML.T0051", "AML.T0054"] },
-  "CHG-04": { "atlas": ["AML.T0010", "AML.T0058"] },
-  "IR-01": { "atlas": ["AML.T0053"] },
-  "IR-02": { "atlas": ["AML.T0012", "AML.T0055", "AML.T0070"] },
+  "CHG-04": { "atlas": ["AML.T0010", "AML.T0058", "AML.T0109"] },
+  "IR-01": { "atlas": ["AML.T0053", "AML.T0108"] },
+  "IR-02": { "atlas": ["AML.T0012", "AML.T0070", "AML.T0080.000"] },
   "DEC-02": { "atlas": ["AML.T0012", "AML.T0055"] },
-  "DEC-03": { "atlas": ["AML.T0057"] },
-  "DEC-05": { "atlas": ["AML.T0012"] }
+  "DEC-03": { "atlas": ["AML.T0085.000"] },
+  "DEC-05": { "atlas": ["AML.T0103"] }
 };
+
+// Evidence-package templates. Single source of truth for the Section 10 artifact list
+// (docs/checklist.md §10 is generated from this by `node build.js`) AND for the reader's
+// per-control "Evidence templates" surfacing. The actual fill-in files live in the
+// repo-root templates/ directory; build.js asserts each `file` exists there.
+// Each entry:
+//   file      string    Template filename in templates/ (the thing you copy and fill in).
+//   artifact  string    Deliverable name as listed in §10 (usually == file; differs for
+//                       the data-flow diagram, whose deliverable is a rendered .png, and
+//                       aibom, which may be .json or .csv).
+//   title     string    Display title.
+//   kind      string    md | csv | json | diagram.
+//   gate      string    Primary SDLC gate it is produced at ("0".."9").
+//   controls  string[]  Primary control IDs the template backs (shown in §10 "Backs" and
+//                       surfaced on those controls in the reader). Must be real control ids.
+//   prefixes  string[]  Extra reader-only surfacing: also show this template on every
+//                       control whose ID-prefix is listed (e.g. "MEM" → all MEM-* controls).
+//   desc      string    One-line description (reader tooltip + templates/README index).
+window.CHECKLIST.templates = [
+  { "file": "use-case-intake.md", "artifact": "use-case-intake.md", "title": "Use-Case Intake Record", "kind": "md", "gate": "0", "controls": ["GOV-01", "GOV-02", "GOV-03", "COMP-01", "CPS-01", "DATA-01"], "prefixes": ["GOV"], "desc": "Decide whether agentic behaviour is justified and how autonomous it may be, with owners, data classes, high-risk actions, compliance and cyber-physical scope." },
+  { "file": "agent-registry.csv", "artifact": "agent-registry.csv", "title": "Agent Registry", "kind": "csv", "gate": "0", "controls": ["GOV-05", "GOV-01", "ID-04"], "prefixes": [], "desc": "One inventory row per deployed agent: owner, purpose, model, tools, data sources, memory, identity, and lifecycle state." },
+  { "file": "agent-threat-model.md", "artifact": "agent-threat-model.md", "title": "Agent Threat Model", "kind": "md", "gate": "1", "controls": ["ARCH-02", "ARCH-03", "ARCH-04", "PROMPT-01"], "prefixes": ["ARCH"], "desc": "Agent-specific trust boundaries, untrusted-input map, AGT risk mapping, and containment boundaries." },
+  { "file": "agent-data-flow.md", "artifact": "agent-data-flow.png", "title": "Agent Data-Flow Diagram", "kind": "diagram", "gate": "1", "controls": ["ARCH-01", "ARCH-02", "ARCH-05"], "prefixes": [], "desc": "Mermaid starter + required-elements checklist for the data-flow diagram (deliverable is the rendered agent-data-flow.png)." },
+  { "file": "agt-risk-register.md", "artifact": "agt-risk-register.md", "title": "AGT Risk Register", "kind": "md", "gate": "1", "controls": ["ARCH-02", "GOV-03", "TEST-01"], "prefixes": [], "desc": "Per-system register of AGT-01..AGT-15: applicability, scenario, likelihood/impact, mitigating controls, residual risk." },
+  { "file": "tool-inventory.csv", "artifact": "tool-inventory.csv", "title": "Tool Inventory", "kind": "csv", "gate": "2", "controls": ["TOOL-01", "TOOL-02", "CODE-01"], "prefixes": ["TOOL"], "desc": "One row per tool/API/function/MCP server: owner, permissions, side effects, reversibility, risk, and gating." },
+  { "file": "permission-matrix.csv", "artifact": "permission-matrix.csv", "title": "Permission Matrix", "kind": "csv", "gate": "2", "controls": ["TOOL-02", "TOOL-04", "ID-01", "ID-05"], "prefixes": ["ID"], "desc": "Which agent/role may perform which action on which tool/resource, with scope, credential type, and approval/step-up." },
+  { "file": "egress-policy.md", "artifact": "egress-policy.md", "title": "Egress Policy", "kind": "md", "gate": "2", "controls": ["ARCH-05", "DATA-02", "DATA-03", "OUT-01", "OPS-04"], "prefixes": [], "desc": "Allowed egress destinations and which data classes may leave through each channel; deny by default, monitor exfiltration." },
+  { "file": "memory-policy.md", "artifact": "memory-policy.md", "title": "Memory Policy", "kind": "md", "gate": "2", "controls": ["MEM-01", "MEM-02", "MEM-03", "MEM-04", "MEM-05", "MEM-06"], "prefixes": ["MEM"], "desc": "What the agent may persist to durable memory, and how it is gated, isolated, reviewed, expired, and integrity-protected." },
+  { "file": "rag-source-registry.csv", "artifact": "rag-source-registry.csv", "title": "RAG Source Registry", "kind": "csv", "gate": "2", "controls": ["RAG-01", "RAG-02", "RAG-03", "RAG-05"], "prefixes": ["RAG"], "desc": "One row per approved retrieval source: owner, trust level, update path, sanitization, tenant namespace, review." },
+  { "file": "agent-communication-protocol.md", "artifact": "agent-communication-protocol.md", "title": "Agent Communication Protocol", "kind": "md", "gate": "2", "controls": ["A2A-01", "A2A-02", "A2A-03", "A2A-04", "A2A-05", "A2A-07"], "prefixes": ["A2A"], "desc": "How agents authenticate, exchange validated messages, restrict delegation, and validate mission-critical decisions." },
+  { "file": "human-approval-policy.md", "artifact": "human-approval-policy.md", "title": "Human Approval Policy", "kind": "md", "gate": "2", "controls": ["HITL-01", "HITL-03", "HITL-04", "HITL-05", "TOOL-04", "ID-05"], "prefixes": ["HITL"], "desc": "Which actions need human approval, what the approver sees, approval tokens, fatigue controls, and fail-safe oversight." },
+  { "file": "red-team-test-results.md", "artifact": "red-team-test-results.md", "title": "Red-Team Test Results", "kind": "md", "gate": "4", "controls": ["TEST-01", "TEST-02", "TEST-03", "TEST-05", "PROMPT-02", "PROMPT-03", "PROMPT-04", "CODE-01", "CODE-02", "CODE-03", "CODE-04", "CPS-02", "CPS-03"], "prefixes": ["TEST"], "desc": "Agentic red-team campaign: methodology, AGT coverage, fixtures, outcome metrics, findings, and release-gate decision." },
+  { "file": "aibom.json", "artifact": "aibom.json or aibom.csv", "title": "AI Bill of Materials (AIBOM)", "kind": "json", "gate": "3", "controls": ["SUP-01", "SUP-02", "SUP-04"], "prefixes": ["SUP"], "desc": "Machine-readable inventory of every model, prompt, tool, plugin, connector, library, dataset, API, and MCP server, with provenance." },
+  { "file": "monitoring-dashboard-link.md", "artifact": "monitoring-dashboard-link.md", "title": "Monitoring Dashboard Reference", "kind": "md", "gate": "6", "controls": ["OPS-03", "OPS-04", "RES-03", "RAG-06"], "prefixes": [], "desc": "Durable links to the live monitoring dashboards plus the alert inventory, thresholds, owners, and review cadence." },
+  { "file": "incident-runbook.md", "artifact": "incident-runbook.md", "title": "Incident Response Runbook", "kind": "md", "gate": "7", "controls": ["IR-01", "IR-02", "IR-03", "IR-04", "OPS-06"], "prefixes": ["IR"], "desc": "Step-by-step procedure to contain a compromised agent: disable, rotate, quarantine, preserve evidence, blast radius, lessons." },
+  { "file": "kill-switch-drill.md", "artifact": "kill-switch-drill.md", "title": "Kill-Switch Drill Record", "kind": "md", "gate": "5", "controls": ["OPS-05", "IR-01", "OPS-06", "CPS-04"], "prefixes": [], "desc": "Evidence the kill switch exists and was exercised: scope, steps, measured time-to-disable, and inactive-state verification." },
+  { "file": "residual-risk-acceptance.md", "artifact": "residual-risk-acceptance.md", "title": "Residual Risk Acceptance (Waiver)", "kind": "md", "gate": "5", "controls": ["GOV-04"], "prefixes": [], "desc": "Time-bound Accepted-Risk waiver record with compensating controls, dual owner approval, expiry, and remediation ticket (not for floor controls)." },
+  { "file": "compliance-obligation-register.md", "artifact": "compliance-obligation-register.md", "title": "Compliance Obligation Register", "kind": "md", "gate": "0", "controls": ["COMP-01", "COMP-02", "COMP-03", "COMP-04", "DATA-04"], "prefixes": ["COMP"], "desc": "Each legal/contractual/customer obligation mapped to an enforcing control, its evidence, residency/retention, owner, and review." },
+  { "file": "raci-matrix.csv", "artifact": "raci-matrix.csv", "title": "RACI Matrix", "kind": "csv", "gate": "0", "controls": ["GOV-01", "IR-01"], "prefixes": [], "desc": "Responsible / Accountable / Consulted / Informed across lifecycle activities and the SDLC gates." },
+  { "file": "agentic-log-standard.md", "artifact": "agentic-log-standard.md", "title": "Agentic Logging Standard", "kind": "md", "gate": "2", "controls": ["OPS-01", "OPS-02", "ARCH-06", "IR-03"], "prefixes": [], "desc": "Required structure, integrity protection, and retention of agentic logs so consequential actions can be reconstructed." },
+  { "file": "decommissioning-playbook.md", "artifact": "decommissioning-playbook.md", "title": "Decommissioning Playbook", "kind": "md", "gate": "9", "controls": ["DEC-01", "DEC-02", "DEC-03", "DEC-04", "DEC-05"], "prefixes": ["DEC"], "desc": "Retire an agent without live attack surface: deactivation, credential revocation, state disposition, tombstone, zombie prevention." },
+  { "file": "data-residency-policy.md", "artifact": "data-residency-policy.md", "title": "Data Residency Policy", "kind": "md", "gate": "0", "controls": ["COMP-02", "DATA-04", "MEM-02", "RAG-05"], "prefixes": [], "desc": "Where each data class may be stored/processed and how residency is enforced across memory, RAG, and model providers." }
+];

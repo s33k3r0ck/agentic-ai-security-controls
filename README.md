@@ -2,7 +2,7 @@
 
 **A secure-SDLC hardening checklist for agentic AI systems** — 114 security controls spanning the lifecycle (use-case intake → decommissioning), for systems where an AI component can plan, call tools, retrieve context, use memory, communicate with other agents, influence human decisions, or take actions with partial autonomy (including agents that drive or gate cyber-physical systems).
 
-**Version 1.0.0** · 2026-06-20 · see [`CHANGELOG.md`](CHANGELOG.md)
+**Version 1.1.0** · 2026-06-20 · see [`CHANGELOG.md`](CHANGELOG.md)
 
 **Repository:** <https://github.com/s33k3r0ck/agentic-ai-security-controls> · [Releases](https://github.com/s33k3r0ck/agentic-ai-security-controls/releases)
 
@@ -34,7 +34,8 @@ It is grounded in a NotebookLM research notebook plus public OWASP references, a
 | `app/checklist.js` | Reader logic. |
 | `app/checklist.css` | Reader styles. |
 | `app/README.md` | Developer guide for the app: data model, reader internals, build step, how to extend. |
-| `build.js` | `node build.js` — validates `app/data.js`, then regenerates `docs/checklist.md`'s tables from it. |
+| `build.js` | `node build.js` — validates `app/data.js`, then regenerates `docs/checklist.md`'s tables (incl. the §10 evidence table) and the `templates/README.md` index from it. |
+| **`templates/`** | Fill-in **evidence-package templates** — one guided template per `docs/checklist.md` §10 artifact, plus an index. See [`templates/README.md`](templates/README.md). |
 | `docs/release-flow.svg` | Diagram of the release flow (gates, CI auto-gates, change-triggered review, floor, runtime, periodic). Embedded in this README. |
 | `docs/build-evidence.md` | Provenance: how the checklist was built and reviewed. |
 | `CHANGELOG.md` | Version history ([Keep a Changelog](https://keepachangelog.com) format). |
@@ -122,6 +123,18 @@ The reader loads `app/data.js` directly — **`app/data.js` is the source of tru
 
 ---
 
+## Evidence-package templates
+
+Section 10 of the checklist defines a per-release **evidence package** — the artifacts (intake record, threat model, tool inventory, AIBOM, kill-switch drill, decommissioning playbook, …) that demonstrate the controls are satisfied. The [`templates/`](templates/) directory ships a **guided, fill-in template for each** of those 23 artifacts: a header block naming the controls and gate it backs, fill-in `_placeholders_`, and guidance you delete as you complete it.
+
+- Copy a template, fill it in, delete the guidance, and store it as evidence; assemble the full set at **Gate 5 (Release Readiness)**.
+- The interactive reader surfaces the relevant template(s) in each control's expanded row ("Evidence templates").
+- The artifact list is part of the single source of truth (`app/data.js` → `window.CHECKLIST.templates`); `docs/checklist.md` §10 and [`templates/README.md`](templates/README.md) are generated from it by `node build.js`.
+
+See [`templates/README.md`](templates/README.md) for the index and the per-artifact control mapping.
+
+---
+
 ## How it was made
 
 **Source.** A NotebookLM project, `AI security`, containing five authoritative sources:
@@ -150,7 +163,7 @@ Released under [semantic versioning](https://semver.org), keyed to the **control
 - **MINOR** (`1.x.0`) — control wording, pass criteria, or evidence refined; new appendices; reader / tooling features. Existing control IDs stay stable.
 - **PATCH** (`1.0.x`) — editorial fixes, typos, non-semantic corrections.
 
-Current release: **1.0.0** — see [`CHANGELOG.md`](CHANGELOG.md). The checklist document edition is labelled *Canonical v1.0* (in `docs/checklist.md`).
+Current release: **1.1.0** — see [`CHANGELOG.md`](CHANGELOG.md). The checklist document edition is labelled *Canonical v1.0* (in `docs/checklist.md`); control IDs are unchanged since 1.0.0.
 
 ---
 

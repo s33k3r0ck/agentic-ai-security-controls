@@ -8,13 +8,29 @@ to the control set (see "Versioning" in the [README](README.md)).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-20
+
+Minor release — **control IDs unchanged** since 1.0.0. Adds evidence-package templates and
+the per-control external-framework crosswalk (Appendix F), re-grounds the MITRE ATLAS mapping
+against catalog v2026.05, and lands reader/tooling and documentation fixes.
+
 ### Added
+
+- **Evidence-package templates** — a new `templates/` directory with a guided, fill-in
+  template for each of the 23 evidence artifacts named in `docs/checklist.md` §10 (intake
+  record, threat model, tool inventory, permission matrix, AIBOM, red-team results,
+  kill-switch drill, decommissioning playbook, …). Each carries a header block (controls
+  backed, SDLC gate, family), fill-in placeholders, and inline guidance. The artifact list
+  is a new `app/data.js` key (`window.CHECKLIST.templates`) that drives a generated §10
+  table, a generated `templates/README.md` index, and a per-control **Evidence templates**
+  block in the reader's expanded row; `build.js` validates the list and asserts every
+  template file exists in `templates/`.
 
 - **Per-control external-framework crosswalk** — a new **Appendix F** in `docs/checklist.md`,
   framework chips in the reader's expanded row, and four columns in the Excel export.
   OWASP Agentic (`T1`–`T17`) and OWASP LLM (`LLM01`–`LLM10`) are derived from each control's
-  AGT risks; **MITRE ATLAS** techniques (`AML.Txxxx`, catalog v5.4.0) are grounded per control
-  where applicable (81 of 114 controls); per-control **source references** are derived from
+  AGT risks; **MITRE ATLAS** techniques (`AML.Txxxx`, catalog v2026.05) are grounded per control
+  where applicable (79 of 114 controls); per-control **source references** are derived from
   the Appendix B family guide. (NIST AI RMF / ISO 42001 / CSA AICM and AIVSS are deliberately
   not carried as empty placeholders — an accurate standard mapping is a separate, deliberate
   effort.) Backed by new `app/data.js` keys (`frameworks`, `sources`,
@@ -23,6 +39,20 @@ to the control set (see "Versioning" in the [README](README.md)).
 
 ### Fixed
 
+- **MITRE ATLAS crosswalk re-grounded against catalog v2026.05** (was v5.4.0, Feb 2026), which
+  added the agentic-attack technique cluster (`AML.T0080`–`AML.T0112`). 42 controls re-mapped and
+  2 removed (79 mapped, down from 81); every id re-validated against the authoritative 2026.05
+  catalog. Notable corrections: `DATA-05` no longer maps to `AML.T0020` (Poison Training Data — a
+  poisoning-integrity technique unrelated to the control's sensitive-data governance) → `AML.T0024`;
+  all six `MEM-*` controls move off generic `AML.T0070`/`AML.T0036` onto the precise
+  `AML.T0080.000` (AI Agent Context Poisoning: Memory); tool/data exfiltration controls
+  (`ARCH-05`, `TOOL-02`/`05`, `DATA-02`/`03`, `OPS-04`) move from the over-broad
+  `AML.T0024`/`AML.T0025` to `AML.T0086` (Exfiltration via AI Agent Tool Invocation) /
+  `AML.T0085` (Data from AI Services); `OUT-02`/`03` drop the ill-fitting `AML.T0067` for
+  `AML.T0077` (LLM Response Rendering); `TEST-03`/`04` drop `AML.T0042` (an adversary-side
+  technique no defensive measurement control mitigates). `CHG-03` keeps `AML.T0051`/`T0054`
+  (its build gate runs a red-team suite). Findings raised by the Codex reviewer; verified
+  control-by-control against the catalog descriptions.
 - Documentation consistency pass (no control changes): aligned the reader window title
   and Excel export metadata to the **Agentic AI Security Controls** brand; reconciled the
   `docs/build-evidence.md` provenance counts (213 → 229 → ~101 → 114) with the README
@@ -75,5 +105,6 @@ Initial public release — the _Canonical v1.0_ checklist edition.
 - `docs/build-evidence.md` — provenance of how the checklist was built and reviewed
   (multi-agent synthesis, blind review, coverage analysis).
 
-[Unreleased]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/s33k3r0ck/agentic-ai-security-controls/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/s33k3r0ck/agentic-ai-security-controls/releases/tag/v1.0.0

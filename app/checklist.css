@@ -407,6 +407,31 @@ input[type='text']:focus {
   color: var(--color-text-tertiary);
   margin-right: 4px;
 }
+.tpl {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid var(--color-border-tertiary);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+}
+.tpl b {
+  flex-basis: 100%;
+}
+.tpll {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-info);
+  background: var(--color-background-info);
+  padding: 1px 6px;
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+}
+.tpll:hover {
+  text-decoration: underline;
+}
 .mut {
   color: var(--color-text-tertiary);
   font-size: 13px;

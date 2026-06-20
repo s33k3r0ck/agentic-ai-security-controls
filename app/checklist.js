@@ -253,6 +253,18 @@ var IC = {
   var MAPS = (window.CHECKLIST && window.CHECKLIST.mappings) || {};
   var FAMSRC = (window.CHECKLIST && window.CHECKLIST.familySources) || {};
   var SRC = (window.CHECKLIST && window.CHECKLIST.sources) || {};
+  // Evidence-package templates (window.CHECKLIST.templates). A template is surfaced on a
+  // control when the control's id is in the template's `controls`, or the control's
+  // ID-prefix is in the template's `prefixes`. Files live in the repo-root templates/.
+  var TPL = (window.CHECKLIST && window.CHECKLIST.templates) || [];
+  function tplsFor(c) {
+    var pfx = String(c.id).split('-')[0];
+    return TPL.filter(function (t) {
+      return (
+        (t.controls && t.controls.indexOf(c.id) >= 0) || (t.prefixes && t.prefixes.indexOf(pfx) >= 0)
+      );
+    });
+  }
   // Per-control external-framework crosswalk. OWASP Agentic/LLM are DERIVED from the
   // control's AGT risks; sources are DERIVED from the family guide; ATLAS is stored in
   // MAPS (grounded). NIST/ISO/AICM are intentionally not carried (see data.js).
@@ -357,6 +369,24 @@ var IC = {
         '</span><span class="fwl"><i>Sources</i> ' +
         (_sr.length ? _sr.map(esc).join(' &middot; ') : '—') +
         '</span></div>';
+      var _tp = tplsFor(c);
+      if (_tp.length)
+        d +=
+          '<div class="tpl"><b>Evidence templates</b>' +
+          _tp
+            .map(function (t) {
+              return (
+                '<a class="tpll" href="../templates/' +
+                encodeURIComponent(t.file) +
+                '" target="_blank" rel="noopener" title="' +
+                esc(t.desc || t.title) +
+                '">' +
+                esc(t.file) +
+                '</a>'
+              );
+            })
+            .join('') +
+          '</div>';
       d +=
         '<div class="ne"><label for="note-' +
         esc(c.id) +

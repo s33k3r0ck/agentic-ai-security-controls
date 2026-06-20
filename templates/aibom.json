@@ -1,0 +1,115 @@
+{
+  "_README": "AI Bill of Materials (AIBOM) template — a machine-readable inventory of every model, prompt, tool, plugin, connector, MCP server, library, dataset, and API in the agentic system, with version and provenance; replace every <placeholder> with real values, then delete this _README, _controls, _meta, and _guidance block so the committed aibom.json is a clean machine-readable inventory.",
+  "_controls": ["SUP-01 — Maintain AI bill of materials", "SUP-02 — Verify provenance and signatures", "SUP-04 — Pin runtime components"],
+  "_meta": {
+    "backs_controls": ["SUP-01", "SUP-02", "SUP-04"],
+    "sdlc_gate": "3 — Secure Implementation",
+    "family": "Supply Chain",
+    "system": "<system name>",
+    "owner": "<name, role>",
+    "date": "<YYYY-MM-DD>",
+    "version": "<vN>",
+    "status": "<draft / approved>"
+  },
+  "_guidance": {
+    "_note": "Delete this whole _guidance block once the AIBOM is filled in. It explains each section and how it backs the controls; it is not part of the evidence record.",
+    "scope": "List EVERY component the agent can load or call at runtime. An entry missing here is an untracked component (SUP-01 gap) and an unpinned/unverified supply-chain risk (SUP-02/SUP-04, risk AGT-12).",
+    "fields": {
+      "version": "A pinned identifier (semver tag, digest, or content hash) — never 'latest' or a floating tag (SUP-04).",
+      "source": "Where the component comes from: registry, repo path, or URL of record.",
+      "provenance": "The signature, attestation, or verification record proving authenticity and integrity (SUP-02). Reference the artifact, e.g. a cosign signature, SLSA attestation, or signed digest.",
+      "approved": "Boolean string: 'true' only if the component passed the documented approval/verification gate before deployment (SUP-02). Anything 'false' must not be deployed.",
+      "risk": "Component risk rating used to prioritize review, e.g. 'low' / 'medium' / 'high'."
+    },
+    "empty_arrays": "Sections left as [] (plugins, connectors, mcpServers, datasets, apis) MUST be empty because the system genuinely has none — not because they were not checked. If a category exists, populate it.",
+    "delete_before_evidence": "Remove _README, _controls, _meta, and this _guidance object so the committed aibom.json is a clean machine-readable inventory."
+  },
+  "metadata": {
+    "system": "<system name>",
+    "generated": "<YYYY-MM-DD>",
+    "owner": "<name, role>",
+    "version": "<vN>",
+    "gate": "3 — Secure Implementation",
+    "completeness_attested": "<true/false>"
+  },
+  "models": [
+    {
+      "name": "<model name>",
+      "version": "<id>",
+      "provider": "<provider>",
+      "source": "<registry/url>",
+      "provenance": "<signature/attestation>",
+      "approved": "<true/false>",
+      "risk": "<rating>"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "<prompt id>",
+      "version": "<hash/tag>",
+      "source": "<repo path>",
+      "approved": "<true/false>"
+    }
+  ],
+  "tools": [
+    {
+      "id": "<tool id>",
+      "version": "<pin>",
+      "source": "<origin>",
+      "provenance": "<signature>",
+      "approved": "<true/false>"
+    }
+  ],
+  "plugins": [
+    {
+      "id": "<plugin id>",
+      "version": "<pin>",
+      "source": "<origin>",
+      "provenance": "<signature>",
+      "approved": "<true/false>"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "<connector id>",
+      "version": "<pin>",
+      "source": "<origin>",
+      "provenance": "<signature>",
+      "approved": "<true/false>"
+    }
+  ],
+  "mcpServers": [
+    {
+      "id": "<mcp server id>",
+      "version": "<pin>",
+      "source": "<origin/url>",
+      "provenance": "<signature/attestation>",
+      "approved": "<true/false>"
+    }
+  ],
+  "libraries": [
+    {
+      "name": "<lib>",
+      "version": "<pin>",
+      "source": "<registry>",
+      "approved": "<true/false>"
+    }
+  ],
+  "datasets": [
+    {
+      "id": "<dataset id>",
+      "version": "<hash/snapshot>",
+      "source": "<origin/url>",
+      "provenance": "<signature/attestation>",
+      "approved": "<true/false>"
+    }
+  ],
+  "apis": [
+    {
+      "id": "<api id>",
+      "version": "<pin/endpoint version>",
+      "source": "<base url>",
+      "approved": "<true/false>"
+    }
+  ]
+}

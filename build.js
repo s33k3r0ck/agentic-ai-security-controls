@@ -2,15 +2,19 @@
 // Build step: regenerate the generated regions of docs/checklist.md from app/data.js.
 // app/data.js is the single source of truth for control data. The HTML reader loads
 // data.js directly (no build needed for it); this script keeps the Markdown's control
-// tables (Section 8), dependency graph (Appendix E), and AGT risk-model tables
-// (Section 4 crosswalk + Appendix D quick reference) in sync with that data.
+// tables (Section 8), dependency graph (Appendix E), AGT risk-model tables (Section 4
+// crosswalk + Appendix D quick reference), the external-framework crosswalk (Appendix F),
+// and the evidence-package table (Section 10) in sync with that data. It also refreshes
+// the generated index table in templates/README.md.
 //
 // Before generating, it VALIDATES the data and aborts (non-zero exit, no file write)
 // on any error: missing/mis-typed fields, duplicate ids, dependsOn that reference an
 // unknown control, dependency cycles, pipe/newline/tab characters in string fields
-// (which would silently corrupt the Markdown tables), malformed AGT entries, and risk
-// tokens that don't resolve to a known AGT id. `validate` is exported so a pre-commit
-// hook or CI can reuse it: require('./build.js').validate(controls, agt).
+// (which would silently corrupt the Markdown tables), malformed AGT entries, risk
+// tokens that don't resolve to a known AGT id, and evidence-template entries that are
+// malformed or reference an unknown control/prefix (build() also asserts each template
+// file exists in templates/). `validate` is exported so a pre-commit hook or CI can
+// reuse it: require('./build.js').validate(controls, agt, extra).
 // Usage: node build.js
 const fs = require('fs');
 const path = require('path');
@@ -190,6 +194,52 @@ function validate(C, agt, extra) {
         if (!srcs[s]) errs.push('familySources["' + pfx + '"]: unknown source ref "' + s + '"');
       });
     });
+
+    // Evidence-package templates: well-formed, kind/gate valid, controls + prefixes resolve,
+    // file/artifact unique. (Disk existence of each file is checked in build(), not here.)
+    const tpls = extra.templates || [];
+    const TKIND = ['md', 'csv', 'json', 'diagram'];
+    const TSTR = ['file', 'artifact', 'title', 'kind', 'gate', 'desc'];
+    const knownPfx = new Set(C.map((c) => c && c.id && String(c.id).split('-')[0]).filter(Boolean));
+    const seenFile = Object.create(null);
+    const seenArtifact = Object.create(null);
+    tpls.forEach((t, i) => {
+      const where = (t && t.file) || 'template #' + i;
+      if (!t) {
+        errs.push('templates[' + i + ']: null entry');
+        return;
+      }
+      TSTR.forEach((f) => {
+        if (typeof t[f] !== 'string' || !t[f])
+          errs.push('templates["' + where + '"]: missing/empty string field "' + f + '"');
+        else if (/[|\n\r\t]/.test(t[f]))
+          errs.push('templates["' + where + '"].' + f + ': pipe/newline/tab would corrupt the Markdown table');
+      });
+      if (TKIND.indexOf(t.kind) < 0)
+        errs.push('templates["' + where + '"]: kind "' + t.kind + '" not one of ' + TKIND.join('/'));
+      if (!/^[0-9]$/.test(t.gate))
+        errs.push('templates["' + where + '"]: gate "' + t.gate + '" must be a single digit "0".."9"');
+      if (!Array.isArray(t.controls)) errs.push('templates["' + where + '"]: "controls" must be an array');
+      else
+        t.controls.forEach((id) => {
+          if (!ctlIds.has(id))
+            errs.push('templates["' + where + '"]: controls references unknown control "' + id + '"');
+        });
+      if (!Array.isArray(t.prefixes)) errs.push('templates["' + where + '"]: "prefixes" must be an array');
+      else
+        t.prefixes.forEach((p) => {
+          if (!knownPfx.has(p))
+            errs.push('templates["' + where + '"]: prefixes references unknown ID-prefix "' + p + '"');
+        });
+      if (t.file) {
+        if (seenFile[t.file]) errs.push('templates: duplicate file "' + t.file + '"');
+        seenFile[t.file] = true;
+      }
+      if (t.artifact) {
+        if (seenArtifact[t.artifact]) errs.push('templates: duplicate artifact "' + t.artifact + '"');
+        seenArtifact[t.artifact] = true;
+      }
+    });
   }
 
   return Array.from(new Set(errs)); // de-dup (one cycle can be reached from several roots)
@@ -206,8 +256,14 @@ function build() {
   const maps = W.mappings || {};
   const familySources = W.familySources || {};
   const sources = W.sources || {};
+  const templates = W.templates || [];
 
-  const errs = validate(C, agt, { mappings: maps, familySources: familySources, sources: sources });
+  const errs = validate(C, agt, {
+    mappings: maps,
+    familySources: familySources,
+    sources: sources,
+    templates: templates,
+  });
   if (errs.length) {
     console.error(
       'app/data.js failed validation (' +
@@ -217,6 +273,19 @@ function build() {
         ') — aborting, docs/checklist.md not written:'
     );
     errs.forEach((e) => console.error('  - ' + e));
+    process.exit(1);
+  }
+
+  // Every referenced template file must actually exist in templates/.
+  const TPLDIR = path.join(__dirname, 'templates');
+  const tplMissing = templates.filter((t) => !fs.existsSync(path.join(TPLDIR, t.file)));
+  if (tplMissing.length) {
+    console.error(
+      'Missing template files in templates/ (referenced by app/data.js, ' +
+        tplMissing.length +
+        ' missing) — aborting:'
+    );
+    tplMissing.forEach((t) => console.error('  - templates/' + t.file));
     process.exit(1);
   }
 
@@ -343,6 +412,33 @@ function build() {
     crosswalk += '| ' + c.id + ' | ' + ow.agentic + ' | ' + ow.llm + ' | ' + cell(m.atlas) + ' |\n';
   });
 
+  // --- Section 10 evidence-package table (from templates) ---
+  let templatesMd = '| Artifact | Gate | Template | Backs controls |\n| --- | --- | --- | --- |\n';
+  templates.forEach((t) => {
+    const link = '[' + t.file + '](../templates/' + t.file + ')';
+    templatesMd +=
+      '| `' + t.artifact + '` | ' + t.gate + ' | ' + link + ' | ' + (t.controls || []).join(', ') + ' |\n';
+  });
+
+  // --- templates/README.md index table (from templates) ---
+  let indexMd = '| Template | Artifact | Gate | Backs controls | Description |\n| --- | --- | --- | --- | --- |\n';
+  templates.forEach((t) => {
+    indexMd +=
+      '| [' +
+      t.file +
+      '](' +
+      t.file +
+      ') | `' +
+      t.artifact +
+      '` | ' +
+      t.gate +
+      ' | ' +
+      (t.controls || []).join(', ') +
+      ' | ' +
+      t.desc +
+      ' |\n';
+  });
+
   // --- Splice into docs/checklist.md between region boundaries ---
   const P = path.join(__dirname, 'docs', 'checklist.md');
   let md = fs.readFileSync(P, 'utf8');
@@ -392,8 +488,30 @@ function build() {
     '<!-- END GENERATED:crosswalk -->',
     crosswalk
   );
+  md = spliceMarked(
+    md,
+    '<!-- BEGIN GENERATED:templates — edit app/data.js, then run: node build.js -->',
+    '<!-- END GENERATED:templates -->',
+    templatesMd
+  );
 
   fs.writeFileSync(P, md);
+
+  // Also refresh the generated index table in templates/README.md (if present).
+  const RP = path.join(__dirname, 'templates', 'README.md');
+  if (fs.existsSync(RP)) {
+    let rmd = fs.readFileSync(RP, 'utf8');
+    if (rmd.indexOf('<!-- BEGIN GENERATED:index') >= 0) {
+      rmd = spliceMarked(
+        rmd,
+        '<!-- BEGIN GENERATED:index — edit app/data.js, then run: node build.js -->',
+        '<!-- END GENERATED:index -->',
+        indexMd
+      );
+      fs.writeFileSync(RP, rmd);
+    }
+  }
+
   console.log(
     'Validated and regenerated docs/checklist.md from app/data.js (' +
       C.length +
@@ -403,7 +521,9 @@ function build() {
       agtIds.length +
       ' AGT risks, ' +
       Object.keys(maps).length +
-      ' ATLAS-mapped controls).'
+      ' ATLAS-mapped controls, ' +
+      templates.length +
+      ' evidence templates).'
   );
 }
 

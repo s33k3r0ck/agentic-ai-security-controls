@@ -119,6 +119,20 @@ expanded row):
 format, dangling source refs, missing ID-prefix entries) and regenerates the Appendix F
 table. OWASP and source refs are **derived, never stored** — like `affects`.
 
+### Evidence-package templates (`templates`)
+
+`window.CHECKLIST.templates` (another sibling key) is the source of truth for the
+**evidence-package artifact list** (docs §10) and the reader's per-control template
+surfacing. Each entry has `file` (the fill-in file in `templates/`), `artifact` (the §10
+deliverable name; differs from `file` for the data-flow `.png` and the JSON/CSV AIBOM),
+`title`, `kind` (`md` / `csv` / `json` / `diagram`), `gate` (`"0"`..`"9"`), `controls`
+(the control ids it backs — shown in §10 "Backs" and surfaced on those controls),
+`prefixes` (extra reader-only surfacing on every control with that ID-prefix), and `desc`.
+`build.js` validates each entry (kind/gate, controls + prefixes resolve, unique file /
+artifact), **asserts every `file` exists in `templates/`**, and generates both the §10
+table and the `templates/README.md` index. A template surfaces on a control when the
+control's id is in `controls` or its ID-prefix is in `prefixes`.
+
 ## How the reader works (`checklist.js`)
 
 The script is one IIFE. Key mechanics:
@@ -151,6 +165,11 @@ The script is one IIFE. Key mechanics:
   (`atlasOf()` from `window.CHECKLIST.mappings`), and source refs (`srcRefs()` from
   `familySources`). The Excel export adds the same as four trailing columns (after
   `Affects`, so the status column stays `B`).
+- **Evidence templates** — the expanded row renders an **Evidence templates** block of
+  links (`tplsFor()` from `window.CHECKLIST.templates`) to the relevant fill-in files
+  under `../templates/` (opened in a new tab). A template is shown when the control's id
+  is in the template's `controls` or its ID-prefix is in `prefixes`. This is reader-only;
+  the Excel export is unchanged (status stays `B`).
 - **Excel export** — the **Export Excel** button downloads the current filtered view
   as a self-contained `.xlsx` workbook. The generator lives in `checklist.js` and
   writes the OpenXML worksheet, styles, metadata, and ZIP container in-browser, so it
