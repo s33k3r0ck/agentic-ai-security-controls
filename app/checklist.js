@@ -250,6 +250,45 @@ var IC = {
       }, 1400);
     }
   }
+  var MAPS = (window.CHECKLIST && window.CHECKLIST.mappings) || {};
+  var FAMSRC = (window.CHECKLIST && window.CHECKLIST.familySources) || {};
+  var SRC = (window.CHECKLIST && window.CHECKLIST.sources) || {};
+  // Per-control external-framework crosswalk. OWASP Agentic/LLM are DERIVED from the
+  // control's AGT risks; sources are DERIVED from the family guide; ATLAS is stored in
+  // MAPS (grounded); NIST/ISO/AICM are scaffold (empty), shown as a reminder line.
+  function deriveOwasp(risk) {
+    var r = (risk || '').trim();
+    if (r === 'All' || /^AGT-\d{2} through AGT-\d{2}$/.test(r))
+      return { agentic: 'All (T1-T17)', llm: 'All (LLM01-LLM10)' };
+    var ag = {},
+      lm = {};
+    r.split(/,\s*/).forEach(function (id) {
+      var a = AGTD[id];
+      if (!a) return;
+      (a.owaspAgentic || '').split(/,\s*/).forEach(function (t) {
+        if (t) ag[t] = 1;
+      });
+      (a.owaspLlm || '').split(/,\s*/).forEach(function (t) {
+        if (t) lm[t] = 1;
+      });
+    });
+    function ord(o) {
+      return Object.keys(o).sort(function (x, y) {
+        return parseInt(x.replace(/\D/g, '') || '0', 10) - parseInt(y.replace(/\D/g, '') || '0', 10);
+      });
+    }
+    return { agentic: ord(ag).join(', ') || '—', llm: ord(lm).join(', ') || '—' };
+  }
+  function srcRefs(id) {
+    var pfx = String(id).split('-')[0];
+    return (FAMSRC[pfx] || []).map(function (k) {
+      return SRC[k] || k;
+    });
+  }
+  function atlasOf(id) {
+    var m = MAPS[id] || {};
+    return m.atlas && m.atlas.length ? m.atlas.slice() : [];
+  }
   function rowHtml(c) {
     var st = status[c.id] || '',
       ex = expanded[c.id];
@@ -304,6 +343,21 @@ var IC = {
         '</span>';
       if (c.dependsOn && c.dependsOn.length) d += '<br><b>Depends on:</b> ' + relChips(c.dependsOn);
       if (c.affects && c.affects.length) d += '<br><b>Affects:</b> ' + relChips(c.affects);
+      var _ow = deriveOwasp(c.risk),
+        _at = atlasOf(c.id),
+        _sr = srcRefs(c.id);
+      d +=
+        '<div class="fw"><b>Frameworks</b>' +
+        '<span class="fwl"><i>OWASP Agentic</i> ' +
+        esc(_ow.agentic) +
+        '</span><span class="fwl"><i>OWASP LLM</i> ' +
+        esc(_ow.llm) +
+        '</span><span class="fwl"><i>MITRE ATLAS</i> ' +
+        (_at.length ? esc(_at.join(', ')) : '—') +
+        '</span><span class="fwl"><i>Sources</i> ' +
+        (_sr.length ? _sr.map(esc).join(' &middot; ') : '—') +
+        '</span><span class="fws">NIST AI RMF &middot; ISO/IEC 42001 &middot; CSA AICM: scaffold — fill against the standard</span>' +
+        '</div>';
       d +=
         '<div class="ne"><label for="note-' +
         esc(c.id) +
@@ -414,11 +468,15 @@ var IC = {
       'Risk',
       'Depends on',
       'Affects',
+      'OWASP Agentic',
+      'OWASP LLM',
+      'MITRE ATLAS',
+      'Sources',
     ];
     var lastRow = Math.max(1, rows.length + 1),
       lastCol = headers.length,
       ref = 'A1:' + colName(lastCol) + lastRow;
-    var widths = [12, 16, 38, 9, 7, 28, 22, 44, 56, 42, 24, 26, 30];
+    var widths = [12, 16, 38, 9, 7, 28, 22, 44, 56, 42, 24, 26, 30, 22, 18, 24, 40];
     var cols =
       '<cols>' +
       widths
@@ -452,6 +510,10 @@ var IC = {
         c.risk,
         (c.dependsOn || []).join(', '),
         (c.affects || []).join(', '),
+        deriveOwasp(c.risk).agentic,
+        deriveOwasp(c.risk).llm,
+        atlasOf(c.id).join(', '),
+        srcRefs(c.id).join(' / '),
       ];
       h += rowXml(
         i + 2,

@@ -32,7 +32,7 @@ function spliceMarked(md, begin, end, body) {
 }
 
 // Returns an array of human-readable error strings; empty array = data is clean.
-function validate(C, agt) {
+function validate(C, agt, extra) {
   const errs = [];
   const FIELDS = [
     'id',
@@ -148,6 +148,50 @@ function validate(C, agt) {
     });
   }
 
+  // External-framework mappings + source refs (optional; validated when build() passes them).
+  if (extra) {
+    const ATLAS_RE = /^AML\.T\d{4}(\.\d{3})?$/;
+    const FW_KEYS = ['atlas', 'nistAiRmf', 'iso42001', 'csaAicm'];
+    const ctlIds = new Set(C.map((c) => c && c.id));
+    const maps = extra.mappings || {};
+    Object.keys(maps).forEach((id) => {
+      if (!ctlIds.has(id)) errs.push('mappings: unknown control id "' + id + '"');
+      const m = maps[id] || {};
+      Object.keys(m).forEach((k) => {
+        if (FW_KEYS.indexOf(k) < 0) {
+          errs.push('mappings["' + id + '"]: unknown framework key "' + k + '"');
+          return;
+        }
+        if (!Array.isArray(m[k])) {
+          errs.push('mappings["' + id + '"].' + k + ' must be an array');
+          return;
+        }
+        m[k].forEach((v) => {
+          if (typeof v !== 'string' || !v)
+            errs.push('mappings["' + id + '"].' + k + ': entries must be non-empty strings');
+          else if (/[|\n\r\t]/.test(v))
+            errs.push('mappings["' + id + '"].' + k + ' "' + v + '": pipe/newline/tab would corrupt the table');
+          else if (k === 'atlas' && !ATLAS_RE.test(v))
+            errs.push('mappings["' + id + '"].atlas: "' + v + '" is not a valid ATLAS id (AML.TXXXX[.XXX])');
+        });
+      });
+    });
+    // familySources: every control's ID-prefix must resolve, and every source ref must exist.
+    const famSrc = extra.familySources || {};
+    const srcs = extra.sources || {};
+    C.forEach((c) => {
+      if (!c || !c.id) return;
+      const pfx = String(c.id).split('-')[0];
+      if (!famSrc[pfx])
+        errs.push('familySources: missing entry for ID-prefix "' + pfx + '" (control ' + c.id + ')');
+    });
+    Object.keys(famSrc).forEach((pfx) => {
+      (Array.isArray(famSrc[pfx]) ? famSrc[pfx] : []).forEach((s) => {
+        if (!srcs[s]) errs.push('familySources["' + pfx + '"]: unknown source ref "' + s + '"');
+      });
+    });
+  }
+
   return Array.from(new Set(errs)); // de-dup (one cycle can be reached from several roots)
 }
 
@@ -157,9 +201,13 @@ function build() {
     console.error('No controls found in app/data.js');
     process.exit(1);
   }
-  const agt = (global.window.CHECKLIST && global.window.CHECKLIST.agt) || {};
+  const W = global.window.CHECKLIST || {};
+  const agt = W.agt || {};
+  const maps = W.mappings || {};
+  const familySources = W.familySources || {};
+  const sources = W.sources || {};
 
-  const errs = validate(C, agt);
+  const errs = validate(C, agt, { mappings: maps, familySources: familySources, sources: sources });
   if (errs.length) {
     console.error(
       'app/data.js failed validation (' +
@@ -265,6 +313,51 @@ function build() {
     riskref += '| ' + k + ' | ' + agt[k].name + ' |\n';
   });
 
+  // --- Appendix F framework crosswalk (per-control; OWASP derived, ATLAS grounded, rest scaffold) ---
+  function deriveOwasp(risk) {
+    const r = (risk || '').trim();
+    if (r === 'All' || /^AGT-\d{2} through AGT-\d{2}$/.test(r))
+      return { agentic: 'All (T1-T17)', llm: 'All (LLM01-LLM10)' };
+    const ag = new Set(),
+      lm = new Set();
+    r.split(/,\s*/)
+      .filter(Boolean)
+      .forEach((id) => {
+        const a = agt[id];
+        if (!a) return;
+        a.owaspAgentic.split(/,\s*/).forEach((t) => t && ag.add(t));
+        a.owaspLlm.split(/,\s*/).forEach((t) => t && lm.add(t));
+      });
+    const ord = (set) =>
+      Array.from(set).sort(
+        (x, y) => parseInt(x.replace(/\D/g, '') || '0', 10) - parseInt(y.replace(/\D/g, '') || '0', 10)
+      );
+    return { agentic: ord(ag).join(', ') || '—', llm: ord(lm).join(', ') || '—' };
+  }
+  const cell = (a) => (Array.isArray(a) && a.length ? a.join(', ') : '—');
+  let crosswalk =
+    '| ID | OWASP Agentic | OWASP LLM | MITRE ATLAS | NIST AI RMF | ISO 42001 | CSA AICM |\n| --- | --- | --- | --- | --- | --- | --- |\n';
+  C.forEach((c) => {
+    const ow = deriveOwasp(c.risk);
+    const m = maps[c.id] || {};
+    crosswalk +=
+      '| ' +
+      c.id +
+      ' | ' +
+      ow.agentic +
+      ' | ' +
+      ow.llm +
+      ' | ' +
+      cell(m.atlas) +
+      ' | ' +
+      cell(m.nistAiRmf) +
+      ' | ' +
+      cell(m.iso42001) +
+      ' | ' +
+      cell(m.csaAicm) +
+      ' |\n';
+  });
+
   // --- Splice into docs/checklist.md between region boundaries ---
   const P = path.join(__dirname, 'docs', 'checklist.md');
   let md = fs.readFileSync(P, 'utf8');
@@ -284,12 +377,16 @@ function build() {
   md =
     md.slice(0, i1) + '\n' + B1 + '\n\n' + controlsMd.trimEnd() + '\n\n' + E1 + '\n' + md.slice(i9);
 
-  // Region 2: from after the Appendix E heading to EOF.
+  // Region 2: regenerate the depgraph block in place, preserving anything after the END
+  // marker (e.g. Appendix F) instead of truncating to EOF.
   const eHead = '## Appendix E. Control Dependency Graph\n';
   let ie = md.indexOf(eHead);
   if (ie < 0) throw new Error('Appendix E heading not found');
   ie += eHead.length;
-  md = md.slice(0, ie) + '\n' + B2 + '\n\n' + dg.trimEnd() + '\n\n' + E2 + '\n';
+  const e2i = md.indexOf(E2);
+  if (e2i < 0) throw new Error(E2 + ' not found');
+  const afterE2 = md.slice(e2i + E2.length); // content after the depgraph block (Appendix F, etc.)
+  md = md.slice(0, ie) + '\n' + B2 + '\n\n' + dg.trimEnd() + '\n\n' + E2 + afterE2;
 
   // Regions 3 & 4: AGT risk-model tables, delimited by explicit BEGIN/END markers.
   md = spliceMarked(
@@ -304,6 +401,12 @@ function build() {
     '<!-- END GENERATED:riskref -->',
     riskref
   );
+  md = spliceMarked(
+    md,
+    '<!-- BEGIN GENERATED:crosswalk — edit app/data.js, then run: node build.js -->',
+    '<!-- END GENERATED:crosswalk -->',
+    crosswalk
+  );
 
   fs.writeFileSync(P, md);
   console.log(
@@ -313,7 +416,9 @@ function build() {
       edges +
       ' dependency edges, ' +
       agtIds.length +
-      ' AGT risks).'
+      ' AGT risks, ' +
+      Object.keys(maps).length +
+      ' ATLAS-mapped controls).'
   );
 }
 

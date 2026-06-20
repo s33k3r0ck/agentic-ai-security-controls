@@ -724,3 +724,133 @@ Relationships between controls. **Depends on** = prerequisite controls that must
 | DEC-05 | OPS-05, DEC-01 | — |
 
 <!-- END GENERATED:depgraph -->
+
+## Appendix F. External Framework Crosswalk
+
+Per-control crosswalk to external AI-security frameworks. The columns differ in authority — read the status before relying on a cell:
+
+- **OWASP Agentic** (`T1`–`T17`) and **OWASP LLM** (`LLM01`–`LLM10`) are **derived** from each control's AGT risks (Section 4), restated at control granularity.
+- **MITRE ATLAS** lists the adversarial techniques (`AML.Txxxx`) each control mitigates or detects — **grounded** against the ATLAS catalog (v5.4.0, Feb 2026) and populated only where a technique clearly applies (`—` otherwise).
+- **NIST AI RMF**, **ISO/IEC 42001**, and **CSA AICM** are **scaffold** columns: intentionally empty (`—`), to be filled per-control against each standard's own text. **These are not authoritative or certified mappings** — populate and verify them against the standard before using them for attestation (see the Section 1 caveat).
+- **AIVSS** is not a per-control column: it scores agentic *vulnerabilities/findings*, so apply it at the AGT-risk / red-team-finding level. Per-control **source references** are surfaced in the interactive reader (derived from the Appendix B family guide).
+
+This table is generated from `app/data.js` (`window.CHECKLIST.mappings` + `window.CHECKLIST.agt`); edit there and run `node build.js`.
+
+<!-- BEGIN GENERATED:crosswalk — edit app/data.js, then run: node build.js -->
+| ID | OWASP Agentic | OWASP LLM | MITRE ATLAS | NIST AI RMF | ISO 42001 | CSA AICM |
+| --- | --- | --- | --- | --- | --- | --- |
+| GOV-01 | T7, T8, T13 | Cross-cutting, LLM06 | — | — | — | — |
+| GOV-02 | T2, T6, T10, T15 | LLM01, LLM06, LLM09 | — | — | — | — |
+| GOV-03 | T2, T3, T11, T13, T15 | LLM02, LLM05, LLM06 | — | — | — | — |
+| GOV-04 | All (T1-T17) | All (LLM01-LLM10) | — | — | — | — |
+| GOV-05 | T7, T13 | LLM06 | — | — | — | — |
+| GOV-06 | T2, T3, T8, T10, T13, T15 | Cross-cutting, LLM02, LLM06, LLM09 | — | — | — | — |
+| GOV-07 | T2, T3, T13, T15, T17 | LLM02, LLM03 | AML.T0010.001 | — | — | — |
+| COMP-01 | T2, T3, T8, T13, T15 | Cross-cutting, LLM02 | — | — | — | — |
+| COMP-02 | T2, T3, T9, T13, T15 | LLM02, LLM07 | — | — | — | — |
+| COMP-03 | T8, T10, T15 | Cross-cutting, LLM06, LLM09 | — | — | — | — |
+| COMP-04 | T2, T3, T13, T15, T17 | LLM02, LLM03 | — | — | — | — |
+| ARCH-01 | All (T1-T17) | All (LLM01-LLM10) | — | — | — | — |
+| ARCH-02 | T1, T6, T12, T14, T16 | LLM01, LLM04, LLM06, LLM08 | AML.T0051.001, AML.T0070 | — | — | — |
+| ARCH-03 | T1, T6 | LLM01, LLM04, LLM06, LLM08 | AML.T0051, AML.T0051.001 | — | — | — |
+| ARCH-04 | T2, T3, T9, T11 | LLM05, LLM06 | AML.T0053, AML.T0050 | — | — | — |
+| ARCH-05 | T2, T3, T11, T13, T15 | LLM02, LLM05 | AML.T0025, AML.T0057 | — | — | — |
+| ARCH-06 | T8 | Cross-cutting | — | — | — | — |
+| TOOL-01 | T2 | LLM06 | — | — | — | — |
+| TOOL-02 | T2, T3, T9 | LLM06 | AML.T0053, AML.T0025 | — | — | — |
+| TOOL-03 | T2, T3, T9 | LLM06 | AML.T0053 | — | — | — |
+| TOOL-04 | T2, T3, T11, T13, T15 | LLM02, LLM05, LLM06 | AML.T0053, AML.T0050 | — | — | — |
+| TOOL-05 | T2, T3, T13, T15 | LLM02, LLM06 | AML.T0053, AML.T0025 | — | — | — |
+| TOOL-06 | T2, T6 | LLM01, LLM06 | AML.T0053, AML.T0060 | — | — | — |
+| TOOL-07 | T2, T10, T15 | LLM06, LLM09 | — | — | — | — |
+| TOOL-08 | T2, T3, T9 | LLM06 | AML.T0055 | — | — | — |
+| ID-01 | T3, T9 | LLM06 | AML.T0012, AML.T0055 | — | — | — |
+| ID-02 | T3, T9 | LLM06 | AML.T0012, AML.T0053 | — | — | — |
+| ID-03 | T2, T3, T9, T13, T15 | LLM02, LLM06 | AML.T0012 | — | — | — |
+| ID-04 | T3, T8, T9 | Cross-cutting, LLM06 | AML.T0012 | — | — | — |
+| ID-05 | T3, T9, T10, T15 | LLM06, LLM09 | AML.T0053 | — | — | — |
+| ID-06 | T3, T9, T12, T14, T16 | LLM01, LLM06 | AML.T0012 | — | — | — |
+| PROMPT-01 | T6 | LLM01, LLM06 | AML.T0051 | — | — | — |
+| PROMPT-02 | T3, T6, T9, T13 | LLM01, LLM02, LLM06, LLM07 | AML.T0051.000, AML.T0054, AML.T0056 | — | — | — |
+| PROMPT-03 | T1, T6, T12, T14, T16 | LLM01, LLM04, LLM06, LLM08 | AML.T0051.001, AML.T0070 | — | — | — |
+| PROMPT-04 | T6 | LLM01, LLM06 | AML.T0068 | — | — | — |
+| PROMPT-05 | T3, T6, T9, T13 | LLM01, LLM02, LLM06, LLM07 | AML.T0056, AML.T0051.001 | — | — | — |
+| PROMPT-06 | T2, T6 | LLM01, LLM06 | AML.T0051 | — | — | — |
+| PROMPT-07 | T1, T6 | LLM01, LLM04, LLM06, LLM08 | AML.T0051.001, AML.T0068 | — | — | — |
+| DATA-01 | T2, T3, T13, T15 | LLM02 | — | — | — | — |
+| DATA-02 | T2, T3, T13, T15 | LLM02 | AML.T0057, AML.T0025, AML.T0024 | — | — | — |
+| DATA-03 | T2, T3, T9, T13, T15 | LLM02, LLM07 | AML.T0057, AML.T0024 | — | — | — |
+| DATA-04 | T2, T3, T13, T15 | LLM02 | AML.T0025 | — | — | — |
+| DATA-05 | T2, T3, T13, T15 | LLM02 | AML.T0020 | — | — | — |
+| RAG-01 | T1, T17 | LLM03, LLM04, LLM08 | AML.T0070, AML.T0019 | — | — | — |
+| RAG-02 | T1, T10, T15 | LLM04, LLM06, LLM08, LLM09 | AML.T0070 | — | — | — |
+| RAG-03 | T1 | LLM04, LLM08 | AML.T0051.001, AML.T0070 | — | — | — |
+| RAG-04 | T1, T10, T15 | LLM04, LLM06, LLM08, LLM09 | AML.T0070, AML.T0051.001 | — | — | — |
+| RAG-05 | T1, T3, T9 | LLM04, LLM06, LLM08 | AML.T0070, AML.T0036 | — | — | — |
+| RAG-06 | T1 | LLM04, LLM08 | AML.T0070, AML.T0019 | — | — | — |
+| MEM-01 | T1 | LLM04, LLM08 | AML.T0051.001, AML.T0070 | — | — | — |
+| MEM-02 | T1, T3, T9 | LLM04, LLM06, LLM08 | AML.T0036 | — | — | — |
+| MEM-03 | T1 | LLM04, LLM08 | AML.T0070 | — | — | — |
+| MEM-04 | T1 | LLM04, LLM08 | AML.T0061, AML.T0070 | — | — | — |
+| MEM-05 | T1 | LLM04, LLM08 | AML.T0070 | — | — | — |
+| MEM-06 | T1 | LLM04, LLM08 | AML.T0070 | — | — | — |
+| OUT-01 | T11 | LLM05 | — | — | — | — |
+| OUT-02 | T11 | LLM05 | AML.T0067 | — | — | — |
+| OUT-03 | T11 | LLM05 | AML.T0067 | — | — | — |
+| OUT-04 | T10, T15 | LLM06, LLM09 | — | — | — | — |
+| OUT-05 | T2, T3, T11, T13, T15 | LLM02, LLM05 | AML.T0057 | — | — | — |
+| OUT-06 | T5, T11 | LLM05, LLM09 | AML.T0067, AML.T0054 | — | — | — |
+| CODE-01 | T11 | LLM05, LLM06 | AML.T0050, AML.T0053 | — | — | — |
+| CODE-02 | T11 | LLM05, LLM06 | AML.T0050, AML.T0025 | — | — | — |
+| CODE-03 | T11 | LLM05, LLM06 | AML.T0050, AML.T0011 | — | — | — |
+| CODE-04 | T11 | LLM05, LLM06 | AML.T0051.001, AML.T0050 | — | — | — |
+| A2A-01 | T12, T14, T16 | LLM01, LLM06 | AML.T0012 | — | — | — |
+| A2A-02 | T12, T14, T16 | LLM01, LLM06 | AML.T0051.001 | — | — | — |
+| A2A-03 | T7, T12, T13, T14, T16 | LLM01, LLM06 | AML.T0051.001, AML.T0053 | — | — | — |
+| A2A-04 | T7, T12, T13, T14, T16 | LLM01, LLM06 | AML.T0053 | — | — | — |
+| A2A-05 | T3, T9, T12, T14, T16 | LLM01, LLM06 | AML.T0053 | — | — | — |
+| A2A-06 | T7, T12, T13, T14, T16 | LLM01, LLM06 | — | — | — | — |
+| A2A-07 | T7, T12, T13, T14, T16 | LLM01, LLM06 | AML.T0053 | — | — | — |
+| HITL-01 | T10, T15 | LLM06, LLM09 | AML.T0067 | — | — | — |
+| HITL-02 | T10, T15 | LLM06, LLM09 | AML.T0067 | — | — | — |
+| HITL-03 | T10, T15 | LLM06, LLM09 | — | — | — | — |
+| HITL-04 | T2, T10, T15 | LLM06, LLM09 | AML.T0053 | — | — | — |
+| HITL-05 | T4, T10, T15 | LLM06, LLM09, LLM10 | — | — | — | — |
+| RES-01 | T4 | LLM10 | AML.T0034.002 | — | — | — |
+| RES-02 | T4, T7, T13 | LLM06, LLM10 | AML.T0034.002, AML.T0029 | — | — | — |
+| RES-03 | T4 | LLM10 | AML.T0034.002, AML.T0029 | — | — | — |
+| CPS-01 | T2, T7, T13 | LLM06 | — | — | — | — |
+| CPS-02 | T2, T11 | LLM05, LLM06 | AML.T0048 | — | — | — |
+| CPS-03 | T2, T7, T13 | LLM06 | AML.T0048, AML.T0053 | — | — | — |
+| CPS-04 | T7, T13 | LLM06 | AML.T0048 | — | — | — |
+| CPS-05 | T2, T12, T14, T16 | LLM01, LLM06 | AML.T0048 | — | — | — |
+| OPS-01 | T8 | Cross-cutting | — | — | — | — |
+| OPS-02 | T8 | Cross-cutting | — | — | — | — |
+| OPS-03 | T6, T7, T13 | LLM01, LLM06 | AML.T0053, AML.T0054 | — | — | — |
+| OPS-04 | T2, T3, T13, T15 | LLM02, LLM06 | AML.T0025, AML.T0057, AML.T0053 | — | — | — |
+| OPS-05 | T7, T13 | LLM06 | — | — | — | — |
+| OPS-06 | T1, T8 | Cross-cutting, LLM04, LLM08 | — | — | — | — |
+| SUP-01 | T17 | LLM03 | AML.T0010 | — | — | — |
+| SUP-02 | T17 | LLM03 | AML.T0010, AML.T0058, AML.T0011.001 | — | — | — |
+| SUP-03 | T17 | LLM03 | — | — | — | — |
+| SUP-04 | T17 | LLM03 | AML.T0010, AML.T0011.001 | — | — | — |
+| SUP-05 | T3, T9, T13, T17 | LLM02, LLM03, LLM07 | AML.T0010.001, AML.T0011.001, AML.T0055 | — | — | — |
+| TEST-01 | All (T1-T17) | All (LLM01-LLM10) | — | — | — | — |
+| TEST-02 | All (T1-T17) | All (LLM01-LLM10) | AML.T0051.000, AML.T0051.001, AML.T0054, AML.T0068 | — | — | — |
+| TEST-03 | All (T1-T17) | All (LLM01-LLM10) | AML.T0042 | — | — | — |
+| TEST-04 | All (T1-T17) | All (LLM01-LLM10) | AML.T0042 | — | — | — |
+| TEST-05 | All (T1-T17) | All (LLM01-LLM10) | AML.T0051, AML.T0054, AML.T0042 | — | — | — |
+| CHG-01 | All (T1-T17) | All (LLM01-LLM10) | — | — | — | — |
+| CHG-02 | T7, T8, T13, T17 | Cross-cutting, LLM03, LLM06 | — | — | — | — |
+| CHG-03 | T7, T13, T17 | LLM03, LLM06 | AML.T0051, AML.T0054 | — | — | — |
+| CHG-04 | T7, T13, T17 | LLM03, LLM06 | AML.T0010, AML.T0058 | — | — | — |
+| IR-01 | T7, T13 | LLM06 | AML.T0053 | — | — | — |
+| IR-02 | T1, T3, T9 | LLM04, LLM06, LLM08 | AML.T0012, AML.T0055, AML.T0070 | — | — | — |
+| IR-03 | All (T1-T17) | All (LLM01-LLM10) | — | — | — | — |
+| IR-04 | All (T1-T17) | All (LLM01-LLM10) | — | — | — | — |
+| DEC-01 | T7, T13 | LLM06 | — | — | — | — |
+| DEC-02 | T3, T7, T9, T13 | LLM06 | AML.T0012, AML.T0055 | — | — | — |
+| DEC-03 | T1, T2, T3, T13, T15 | LLM02, LLM04, LLM08 | AML.T0057 | — | — | — |
+| DEC-04 | T8 | Cross-cutting | — | — | — | — |
+| DEC-05 | T7, T13 | LLM06 | AML.T0012 | — | — | — |
+<!-- END GENERATED:crosswalk -->

@@ -1570,3 +1570,148 @@ window.CHECKLIST.agt = {
   "AGT-14": { "name": "Repudiation and audit gaps", "failure": "Agent actions cannot be attributed, reconstructed, or verified.", "owaspAgentic": "T8", "owaspLlm": "Cross-cutting" },
   "AGT-15": { "name": "System prompt, secret, and policy leakage", "failure": "Hidden prompts, policies, secrets, credentials, or internal config leak.", "owaspAgentic": "T3, T9, T13", "owaspLlm": "LLM02, LLM07" }
 };
+
+// External-framework crosswalk metadata. `status` is one of:
+//   derived  — computed per-control from existing data (not stored): owaspAgentic /
+//              owaspLlm come from each control's AGT risks (window.CHECKLIST.agt);
+//              sourceRefs come from familySources (below).
+//   grounded — stored per-control in window.CHECKLIST.mappings, checked against a
+//              primary catalog (MITRE ATLAS v5.4.0).
+//   scaffold — intentionally EMPTY, to be filled per-control against the standard's
+//              own text. NOT an authoritative/certified mapping; do not treat a
+//              scaffold cell as a compliance attestation.
+window.CHECKLIST.frameworks = [
+  { "key": "owaspAgentic", "label": "OWASP Agentic", "status": "derived", "url": "https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/", "note": "OWASP Agentic Security Initiative T1-T17, derived from the control's AGT risks (Section 4)." },
+  { "key": "owaspLlm", "label": "OWASP LLM Top 10", "status": "derived", "url": "https://genai.owasp.org/llm-top-10/", "note": "OWASP LLM Top 10 2025 LLM01-LLM10, derived from the control's AGT risks." },
+  { "key": "mitreAtlas", "label": "MITRE ATLAS", "status": "grounded", "url": "https://atlas.mitre.org/", "note": "Adversarial techniques (AML.Txxxx) the control mitigates/detects. Catalog v5.4.0 (Feb 2026); populated where applicable." },
+  { "key": "nistAiRmf", "label": "NIST AI RMF", "status": "scaffold", "url": "https://www.nist.gov/itl/ai-risk-management-framework", "note": "Fill from NIST AI 100-1 (GOVERN/MAP/MEASURE/MANAGE subcategories). Indicative crosswalk only - verify against the standard." },
+  { "key": "iso42001", "label": "ISO/IEC 42001", "status": "scaffold", "url": "https://www.iso.org/standard/42001", "note": "Fill from ISO/IEC 42001 Annex A controls. Indicative crosswalk only - verify against the standard." },
+  { "key": "csaAicm", "label": "CSA AICM", "status": "scaffold", "url": "https://cloudsecurityalliance.org/research/working-groups/ai-controls-matrix", "note": "Fill from the CSA AI Controls Matrix. Indicative crosswalk only - verify against the standard." }
+];
+// AIVSS note: the AI Vulnerability Scoring System scores agentic VULNERABILITIES
+// (a per-finding severity score), not controls, so it is applied at the AGT-risk /
+// red-team-finding level rather than as a per-control column here.
+
+// Primary-source citations (the five NotebookLM source PDFs) keyed by short id.
+window.CHECKLIST.sources = {
+  "owasp-agentic": "OWASP Top 10 for Agentic Applications (2026)",
+  "red-team": "Agentic AI Red Teaming Guide (2025, CSA + OWASP)",
+  "pi-taxonomy": "Prompt Injection Taxonomy poster (CrowdStrike)",
+  "securing-agents": "Securing AI Agents: Foundations, Frameworks, and Real-World Deployment",
+  "playbook": "Securing AI Systems: A Playbook for Security Leaders",
+  "sdlc": "SDLC synthesis (this document)"
+};
+// Per-control source references are DERIVED from the control's ID-prefix via this map
+// (the grounded Appendix B family source guide). Keyed by ID-prefix.
+window.CHECKLIST.familySources = {
+  "GOV": ["sdlc", "securing-agents", "playbook"],
+  "ARCH": ["sdlc", "securing-agents", "playbook"],
+  "CHG": ["sdlc", "securing-agents", "playbook"],
+  "IR": ["sdlc", "securing-agents", "playbook"],
+  "DEC": ["sdlc", "securing-agents", "playbook"],
+  "COMP": ["playbook", "securing-agents"],
+  "DATA": ["playbook", "securing-agents"],
+  "RAG": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "MEM": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "TOOL": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "ID": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "PROMPT": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "OUT": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "CODE": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "A2A": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "HITL": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "RES": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "CPS": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "OPS": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "SUP": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"],
+  "TEST": ["owasp-agentic", "red-team", "securing-agents", "pi-taxonomy"]
+};
+// Per-control external-framework mappings. Keyed by control id. Sparse: only controls
+// with at least one grounded mapping appear. Each entry may carry: atlas (MITRE ATLAS
+// AML.Txxxx ids), and the scaffold arrays nistAiRmf / iso42001 / csaAicm (fill per the
+// standard). owaspAgentic / owaspLlm / sourceRefs are DERIVED, not stored here.
+// The `atlas` values below are grounded against MITRE ATLAS v5.4.0; scaffold arrays are
+// omitted (empty) for a human to fill against each standard's own text.
+window.CHECKLIST.mappings = {
+  "GOV-07": { "atlas": ["AML.T0010.001"] },
+  "ARCH-02": { "atlas": ["AML.T0051.001", "AML.T0070"] },
+  "ARCH-03": { "atlas": ["AML.T0051", "AML.T0051.001"] },
+  "ARCH-04": { "atlas": ["AML.T0053", "AML.T0050"] },
+  "ARCH-05": { "atlas": ["AML.T0025", "AML.T0057"] },
+  "TOOL-02": { "atlas": ["AML.T0053", "AML.T0025"] },
+  "TOOL-03": { "atlas": ["AML.T0053"] },
+  "TOOL-04": { "atlas": ["AML.T0053", "AML.T0050"] },
+  "TOOL-05": { "atlas": ["AML.T0053", "AML.T0025"] },
+  "TOOL-06": { "atlas": ["AML.T0053", "AML.T0060"] },
+  "TOOL-08": { "atlas": ["AML.T0055"] },
+  "ID-01": { "atlas": ["AML.T0012", "AML.T0055"] },
+  "ID-02": { "atlas": ["AML.T0012", "AML.T0053"] },
+  "ID-03": { "atlas": ["AML.T0012"] },
+  "ID-04": { "atlas": ["AML.T0012"] },
+  "ID-05": { "atlas": ["AML.T0053"] },
+  "ID-06": { "atlas": ["AML.T0012"] },
+  "PROMPT-01": { "atlas": ["AML.T0051"] },
+  "PROMPT-02": { "atlas": ["AML.T0051.000", "AML.T0054", "AML.T0056"] },
+  "PROMPT-03": { "atlas": ["AML.T0051.001", "AML.T0070"] },
+  "PROMPT-04": { "atlas": ["AML.T0068"] },
+  "PROMPT-05": { "atlas": ["AML.T0056", "AML.T0051.001"] },
+  "PROMPT-06": { "atlas": ["AML.T0051"] },
+  "PROMPT-07": { "atlas": ["AML.T0051.001", "AML.T0068"] },
+  "DATA-02": { "atlas": ["AML.T0057", "AML.T0025", "AML.T0024"] },
+  "DATA-03": { "atlas": ["AML.T0057", "AML.T0024"] },
+  "DATA-04": { "atlas": ["AML.T0025"] },
+  "DATA-05": { "atlas": ["AML.T0020"] },
+  "RAG-01": { "atlas": ["AML.T0070", "AML.T0019"] },
+  "RAG-02": { "atlas": ["AML.T0070"] },
+  "RAG-03": { "atlas": ["AML.T0051.001", "AML.T0070"] },
+  "RAG-04": { "atlas": ["AML.T0070", "AML.T0051.001"] },
+  "RAG-05": { "atlas": ["AML.T0070", "AML.T0036"] },
+  "RAG-06": { "atlas": ["AML.T0070", "AML.T0019"] },
+  "MEM-01": { "atlas": ["AML.T0051.001", "AML.T0070"] },
+  "MEM-02": { "atlas": ["AML.T0036"] },
+  "MEM-03": { "atlas": ["AML.T0070"] },
+  "MEM-04": { "atlas": ["AML.T0061", "AML.T0070"] },
+  "MEM-05": { "atlas": ["AML.T0070"] },
+  "MEM-06": { "atlas": ["AML.T0070"] },
+  "OUT-02": { "atlas": ["AML.T0067"] },
+  "OUT-03": { "atlas": ["AML.T0067"] },
+  "OUT-05": { "atlas": ["AML.T0057"] },
+  "OUT-06": { "atlas": ["AML.T0067", "AML.T0054"] },
+  "CODE-01": { "atlas": ["AML.T0050", "AML.T0053"] },
+  "CODE-02": { "atlas": ["AML.T0050", "AML.T0025"] },
+  "CODE-03": { "atlas": ["AML.T0050", "AML.T0011"] },
+  "CODE-04": { "atlas": ["AML.T0051.001", "AML.T0050"] },
+  "A2A-01": { "atlas": ["AML.T0012"] },
+  "A2A-02": { "atlas": ["AML.T0051.001"] },
+  "A2A-03": { "atlas": ["AML.T0051.001", "AML.T0053"] },
+  "A2A-04": { "atlas": ["AML.T0053"] },
+  "A2A-05": { "atlas": ["AML.T0053"] },
+  "A2A-07": { "atlas": ["AML.T0053"] },
+  "HITL-01": { "atlas": ["AML.T0067"] },
+  "HITL-02": { "atlas": ["AML.T0067"] },
+  "HITL-04": { "atlas": ["AML.T0053"] },
+  "RES-01": { "atlas": ["AML.T0034.002"] },
+  "RES-02": { "atlas": ["AML.T0034.002", "AML.T0029"] },
+  "RES-03": { "atlas": ["AML.T0034.002", "AML.T0029"] },
+  "CPS-02": { "atlas": ["AML.T0048"] },
+  "CPS-03": { "atlas": ["AML.T0048", "AML.T0053"] },
+  "CPS-04": { "atlas": ["AML.T0048"] },
+  "CPS-05": { "atlas": ["AML.T0048"] },
+  "OPS-03": { "atlas": ["AML.T0053", "AML.T0054"] },
+  "OPS-04": { "atlas": ["AML.T0025", "AML.T0057", "AML.T0053"] },
+  "SUP-01": { "atlas": ["AML.T0010"] },
+  "SUP-02": { "atlas": ["AML.T0010", "AML.T0058", "AML.T0011.001"] },
+  "SUP-04": { "atlas": ["AML.T0010", "AML.T0011.001"] },
+  "SUP-05": { "atlas": ["AML.T0010.001", "AML.T0011.001", "AML.T0055"] },
+  "TEST-02": { "atlas": ["AML.T0051.000", "AML.T0051.001", "AML.T0054", "AML.T0068"] },
+  "TEST-03": { "atlas": ["AML.T0042"] },
+  "TEST-04": { "atlas": ["AML.T0042"] },
+  "TEST-05": { "atlas": ["AML.T0051", "AML.T0054", "AML.T0042"] },
+  "CHG-03": { "atlas": ["AML.T0051", "AML.T0054"] },
+  "CHG-04": { "atlas": ["AML.T0010", "AML.T0058"] },
+  "IR-01": { "atlas": ["AML.T0053"] },
+  "IR-02": { "atlas": ["AML.T0012", "AML.T0055", "AML.T0070"] },
+  "DEC-02": { "atlas": ["AML.T0012", "AML.T0055"] },
+  "DEC-03": { "atlas": ["AML.T0057"] },
+  "DEC-05": { "atlas": ["AML.T0012"] }
+};

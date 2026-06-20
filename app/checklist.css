@@ -385,6 +385,34 @@ input[type='text']:focus {
   cursor: pointer;
   margin: 0 3px 3px 0;
 }
+.fw {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid var(--color-border-tertiary);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+.fw b {
+  flex-basis: 100%;
+}
+.fwl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-secondary);
+}
+.fwl i {
+  font-style: normal;
+  color: var(--color-text-tertiary);
+  margin-right: 4px;
+}
+.fws {
+  flex-basis: 100%;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--color-text-tertiary);
+}
 .mut {
   color: var(--color-text-tertiary);
   font-size: 13px;

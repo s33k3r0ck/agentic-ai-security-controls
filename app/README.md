@@ -37,7 +37,8 @@ requests**. Keep the four files in the same directory.
           │
           └── node build.js ────────► docs/checklist.md
                                         (Section 8 tables, Appendix E graph,
-                                         Section 4 + Appendix D AGT tables —
+                                         Section 4 + Appendix D AGT tables,
+                                         Appendix F framework crosswalk —
                                          inside GENERATED markers only)
 ```
 
@@ -97,6 +98,28 @@ the Appendix D quick reference in `docs/checklist.md`. Each entry is keyed by
 (the `All` / `AGT-01 through AGT-15` catch-alls are allowed), so a typo'd `AGT-99`
 fails the build.
 
+### External-framework crosswalk (`frameworks` / `sources` / `familySources` / `mappings`)
+
+Four more top-level keys in `data.js` (siblings of `controls` and `agt`) drive the
+per-control crosswalk to external AI-security frameworks (docs Appendix F + the reader's
+expanded row):
+
+- **`frameworks`** — metadata for each framework, each with a `status`: `derived` (OWASP
+  Agentic / OWASP LLM, computed from the control's AGT risks; source refs, from
+  `familySources`), `grounded` (MITRE ATLAS, stored in `mappings`, checked against the
+  ATLAS catalog), or `scaffold` (NIST AI RMF, ISO/IEC 42001, CSA AICM — intentionally
+  empty, to be filled per-control against the standard; **not authoritative mappings**).
+- **`sources`** — the five NotebookLM source PDFs keyed by short id.
+- **`familySources`** — ID-prefix → source ids (the grounded Appendix B family guide);
+  per-control source refs derive from this via the control's prefix.
+- **`mappings`** — sparse map of control id → `{ atlas: [AML.Txxxx, …] }` (plus optional
+  scaffold arrays `nistAiRmf` / `iso42001` / `csaAicm`). Only controls with at least one
+  grounded mapping appear; ATLAS ids are format-validated (`AML.TXXXX[.XXX]`).
+
+`build.js` validates these (unknown control ids, unknown framework keys, bad ATLAS id
+format, dangling source refs, missing ID-prefix entries) and regenerates the Appendix F
+table. OWASP and source refs are **derived, never stored** — like `affects`.
+
 ## How the reader works (`checklist.js`)
 
 The script is one IIFE. Key mechanics:
@@ -124,6 +147,11 @@ The script is one IIFE. Key mechanics:
 - **AGT legend + tooltips from data** — at load the reader builds its `AGT` id→name
   map and fills the `#agtlegend` grid from `window.CHECKLIST.agt`. Nothing about the
   risk model is hardcoded in `checklist.js` or `checklist.html` anymore.
+- **External-framework crosswalk** — the expanded row renders a **Frameworks** block:
+  OWASP Agentic / OWASP LLM (`deriveOwasp()` from the control's AGT risks), MITRE ATLAS
+  (`atlasOf()` from `window.CHECKLIST.mappings`), and source refs (`srcRefs()` from
+  `familySources`), plus a scaffold reminder for NIST / ISO / AICM. The Excel export adds
+  the same as four trailing columns (after `Affects`, so the status column stays `B`).
 - **Excel export** — the **Export Excel** button downloads the current filtered view
   as a self-contained `.xlsx` workbook. The generator lives in `checklist.js` and
   writes the OpenXML worksheet, styles, metadata, and ZIP container in-browser, so it
@@ -224,11 +252,14 @@ without writing), then regenerates **only** the marked regions of `docs/checklis
 3. **Section 4 risk-model crosswalk** and **Appendix D quick reference** — both AGT
    tables, regenerated from `window.CHECKLIST.agt`. Spliced inside the
    `GENERATED:riskmodel` and `GENERATED:riskref` markers.
+4. **Appendix F framework crosswalk** — the per-control external-framework table (OWASP
+   derived from AGT risks, MITRE ATLAS from `window.CHECKLIST.mappings`, NIST/ISO/AICM
+   scaffold). Spliced inside the `GENERATED:crosswalk` markers.
 
 The controls and dependency-graph regions are located by heading anchors in
 `docs/checklist.md` (the Section 8 note sentence, `## 9. Waivers and Severity`,
-`## Appendix E …`); the two AGT regions are located by their explicit `BEGIN`/`END`
-markers. If you rename those headings or drop a marker, update `build.js` — it throws
+`## Appendix E …`); the two AGT regions and the Appendix F crosswalk are located by their
+explicit `BEGIN`/`END` markers. If you rename those headings or drop a marker, update `build.js` — it throws
 rather than guessing. Everything outside the markers (prose, gates, and the non-AGT
 legend content) is hand-maintained.
 
