@@ -4,9 +4,7 @@
 
 **Version 1.1.0** · 2026-06-20 · see [`CHANGELOG.md`](CHANGELOG.md)
 
-**Repository:** <https://github.com/s33k3r0ck/agentic-ai-security-controls> · [Releases](https://github.com/s33k3r0ck/agentic-ai-security-controls/releases)
-
-It is grounded in a NotebookLM research notebook plus public OWASP references, and was produced through a multi-agent review process (Claude + Codex). It is a baseline you can hand to engineering and security leadership.
+This repository is **not** an attempt to replace existing standards and practices — it brings them together and makes them practical to use when building secure agentic AI systems. The controls it offers are deliberately simple, clear, and measurable.
 
 ---
 
