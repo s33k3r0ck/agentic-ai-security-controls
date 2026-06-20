@@ -4,7 +4,7 @@
 
 **Version 1.0.0** · 2026-06-20 · see [`CHANGELOG.md`](CHANGELOG.md)
 
-It is grounded in a NotebookLM research notebook plus public OWASP references, and was produced through a multi-agent review process (Claude + Codex). It is a baseline you can hand to engineering and security leadership — **not** a legal or compliance standard by itself.
+It is grounded in a NotebookLM research notebook plus public OWASP references, and was produced through a multi-agent review process (Claude + Codex). It is a baseline you can hand to engineering and security leadership.
 
 ---
 
